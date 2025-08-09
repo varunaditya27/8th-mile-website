@@ -23,7 +23,7 @@ export default function Sidebar() {
         <a href="https://www.instagram.com/8thmile.rvce?igsh=MWxmYWl6aDJ0dTYy">
           <FaInstagram size={24} className="hover:scale-110 transition-transform text-foreground" />
         </a>
-        <a href="https://youtube.com/@8thmilervce55?si=owO-hJfKsTe2EZpn
+        <a href="https://youtube.com/@55?si=owO-hJfKsTe2EZpn
 " target="_blank" rel="noopener noreferrer">
           <FaYoutube size={24} className="hover:scale-110 transition-transform text-foreground" />
         </a>

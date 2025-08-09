@@ -35,8 +35,9 @@ export default function VerifyPage() {
         const response = await fetch(`/api/registration-data?payment_id=${paymentId}`, {
           method: 'GET',
         });
-        if (!response.ok) {
-          throw new Error('Failed to fetch data');
+        if(response.status === 404) {
+          alert('Payment not found. Please check the payment ID and try again.');
+          window.location.href = '/';
         }
         const data = await response.json();
         setData(data);
