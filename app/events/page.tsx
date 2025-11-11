@@ -169,6 +169,7 @@ const EventsPage = () => {
                                             'shadow-green-400'}`}
                         >
 
+
                             {/* Event Image */}
                             <div className="relative w-full" style={{ paddingBottom: '125%' }}>
                                 <Image
