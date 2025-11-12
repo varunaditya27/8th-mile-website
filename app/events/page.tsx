@@ -176,7 +176,7 @@ const EventsPage = () => {
                     animate="visible"
                     transition={{ duration: 0.3, delay: index * 0.1 }}
                     onClick={() => router.push(`/events/${event.slug}`)}
-                    className={`relative cursor-pointer bg-white  overflow-hidden hover:scale-105 transition-transform shadow-sm h-full flex flex-col shadow-slate-800`}
+                    className={`relative cursor-pointer bg-black overflow-hidden hover:scale-105 transition-transform shadow-sm h-full flex flex-col shadow-slate-800`}
                 >
                     {/* Event Image */}
                     <div className="relative w-full" style={{ paddingBottom: '125%' }}>
@@ -190,10 +190,10 @@ const EventsPage = () => {
 
                     {/* Content */}
                     <div className="p-4 flex-grow flex flex-col">
-                        <div className="text-xl font-bold tex-[#f9dd9c] text-black mb-2 line-clamp-1">
+                        <div className="text-xl font-bold text-[#f9dd9c] mb-2 line-clamp-1">
                             {event.name}
                         </div>
-                        <p className="text-sm text-gray-800 mb-3 line-clamp-2 flex-grow">
+                        <p className="text-sm text-gray-300 mb-3 line-clamp-2 flex-grow">
                             {event.description}
                         </p>
                     </div>
