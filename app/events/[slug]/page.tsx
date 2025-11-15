@@ -123,13 +123,13 @@ const EventDetail = () => {
                 <div className="w-full md:w-1/2 grid grid-cols-1 gap-6">
                     {/* Event Name & Description */}
                     <div className="bg-transparent backdrop-blur-2xl p-4 rounded-lg border border-gray-700">
-                        <p className="text-[#007dc9] seasons text-2xl md:text-4xl text-center">{event.name}</p>
+                        <p className="text-black seasons text-2xl md:text-4xl text-center">{event.name}</p>
                         <p className="mt-2 text-sm text-center">{event.description}</p>
                     </div>
 
                     <div className="flex flex-col md:flex-row w-full gap-6">
                         {/* Schedule */}
-                        <div className="w-full md:w-1/2 bg-transparent backdrop-blur-2xl p-4 rounded-lg border border-gray-300">
+                        <div className="w-full md:w-1/2 bg-transparent backdrop-blur-2xl p-4 rounded-lg border border-gray-700">
                             <p className="sora text-center font-extrabold text-lg mb-2 text-[#25ae80]">Schedule</p>
                             <p className="text-sm text-center md:text-left">Date: {event.date || 'TBA'}</p>
                             {event.time && event.time !== 'X' && <p className="text-sm text-center md:text-left">Time: {event.time}</p>}
@@ -139,7 +139,7 @@ const EventDetail = () => {
                         {/* Prizes */}
                         {event.prizes && event.prizes.length > 0 && (
                             <div className="w-full md:w-1/2 bg-white p-4 rounded-lg border border-[#f6921e] shadow-lg">
-                                <p className="text-center sora extra-semibold text-lg mb-2 text-[#f6921e]">Prizes</p>
+                                <p className="text-center sora font-extrabold text-lg mb-2 text-[#f6921e]">Prizes</p>
                                 <p className="list-disc list-inside text-sm space-y-1 text-center md:text-left">
                                     {event.prizes.map((prize, index) => (
                                         <p key={index}>{prize}</p>
@@ -160,7 +160,7 @@ const EventDetail = () => {
                         {/* Contacts */}
                         {event.contact && event.contact.length > 0 && (
                             <div className="w-full md:w-1/2 bg-white p-4 rounded-lg border border-gray-700">
-                                <p className="text-black text-center font-semibold text-lg mb-2">Contact Details</p>
+                                <p className="text-[#007dc9] text-center font-extrabold sora text-lg mb-2">Contact Details</p>
                                 {event.contact.map((contact, index) => (
                                     <div key={index} className="text-sm mt-1 text-center md:text-left">
                                         <strong>{contact.name}</strong> - {contact.phone}
@@ -173,7 +173,7 @@ const EventDetail = () => {
                     {/* Guidelines */}
                     {event.guidelines && event.guidelines.length > 0 && (
                         <div className="bg-white p-4 rounded-lg border border-gray-700">
-                            <p className="font-semibold text-lg mb-2 text-[#be1e2d] text-center">Guidelines</p>
+                            <p className="font-extrabold sora text-lg mb-2 text-[#be1e2d] text-center">Guidelines</p>
                             <ul className="list-disc list-inside text-sm space-y-1">
                                 {event.guidelines.map((g, i) => (
                                     <li key={i}>{g}</li>
