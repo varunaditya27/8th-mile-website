@@ -98,6 +98,14 @@ html, body {
   font-family: var(--font-delagothic);
 }
 
+.seasons {
+  font-family: var(--font-seasons);
+}
+
+.sora {
+  font-family: var(--font-sora);
+}
+
 h1, h2, h3, h4, h5, h6 {
   /* @apply text-foreground; */
   font-family: var(--font-samarkan);

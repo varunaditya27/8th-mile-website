@@ -42,10 +42,22 @@ const delagothic = localFont({
   variable: '--font-delagothic',
 })
 
+const seasons = localFont({
+  src: "../public/fonts/theseasons-reg.ttf",
+  display: 'swap',
+  variable: '--font-seasons',
+})
+
+const sora = localFont({
+  src: "../public/fonts/Sora-VariableFont_wght.ttf",
+  display: 'swap',
+  variable: '--font-sora',
+})
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
-      <html lang="en" suppressHydrationWarning className={`${samarkan.variable} ${akaya.variable} ${fraunces.variable} ${poppins.variable} ${delagothic.variable}`}>
+      <html lang="en" suppressHydrationWarning className={`${samarkan.variable} ${akaya.variable} ${fraunces.variable} ${poppins.variable} ${delagothic.variable} ${sora.variable} ${seasons.variable}`}>
         <head />
         <body>
           {children}
