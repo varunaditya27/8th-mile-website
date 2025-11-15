@@ -98,6 +98,13 @@ html, body {
   font-family: var(--font-delagothic);
 }
 
+.squiggly-bg {
+  background-image: url('/squiggly.svg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
 .seasons {
   font-family: var(--font-seasons);
 }

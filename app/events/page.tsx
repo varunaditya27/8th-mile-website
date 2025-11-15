@@ -105,7 +105,7 @@ const EventsPage = () => {
     };
 
     return (
-        <div className="bg-white min-h-screen text-white py-32 px-6">
+        <div className="squiggly-bg min-h-screen text-white py-32 px-6">
             {/* Page Heading */}
             <motion.div
                 className="seasons text-7xl text-black text-center mb-6"
