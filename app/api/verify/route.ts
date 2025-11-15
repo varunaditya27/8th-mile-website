@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextResponse } from "next/server";
-import { client } from "@/lib/phonepay";
+// import { client } from "@/lib/phonepay";
 import Order from "@/lib/models/Orders";
 import Registration from "@/lib/models/Registrations";
 import { connectToDatabase } from "@/lib/db";
@@ -118,6 +118,60 @@ export async function GET(request: Request) {
                 { status: 404 }
             );
         }
+
+        // using cashfree payment verification as the sole payment provider
+        try {
+            // Make direct API call to Cashfree to verify order status (using SDK in the api/cashfree-order route)
+            const cashfreeApiUrl = process.env.NEXT_PUBLIC_CASHFREE_MODE === 'production'
+                ? 'https://api.cashfree.com/pg'
+                : 'https://sandbox.cashfree.com/pg';
+            
+            const cashfreeResponse = await fetch(`${cashfreeApiUrl}/orders/${order.cashfreeOrderId}`, {
+                method: 'GET',
+                headers: {
+                    'accept': 'application/json',
+                    'x-api-version': '2023-08-01',
+                    'x-client-id': process.env.NEXT_PUBLIC_CASHFREE_CLIENT_ID as string,
+                    'x-client-secret': process.env.CASHFREE_CLIENT_SECRET as string
+                }
+            });
+
+            // remove console log in production
+            if (!cashfreeResponse.ok) {
+                console.error('Cashfree API error:', await cashfreeResponse.text());
+                return NextResponse.json({ success: false, message: 'Payment verification failed' }, { status: 500 });
+            }
+
+            const cashfreeData = await cashfreeResponse.json();
+            console.log('Cashfree order status:', cashfreeData);
+            
+            if (cashfreeData.order_status === 'PAID') {
+                // Payment successful, proceed with registration
+            } else if (cashfreeData.order_status === 'ACTIVE') {
+                return NextResponse.json({ success: false, message: 'Payment pending. Please complete the payment.' }, { status: 400 });
+            } else {
+                console.log('Payment failed or order status unknown:', cashfreeData.order_status);
+                return NextResponse.redirect(new URL(`/failed`, request.url));
+            }
+        } catch (cfError) {
+            console.error('Cashfree verification error:', cfError);
+            return NextResponse.json({ success: false, message: 'Payment verification failed' }, { status: 500 });
+        }
+
+        /* PhonePe verification code - commented out to avoid any issues
+        if (order.provider === 'phonepe') {
+            const response = await client.getOrderStatus(paymentId);
+            console.log('PhonePe order status:', response);
+            
+            if (response.state !== "COMPLETED") {
+                if(response.state === "FAILED"){
+                    return NextResponse.redirect(new URL(`/failed`, request.url));
+                } else {
+                    return NextResponse.json({ success: false, message: 'Something Went Wrong' }, {status: 400});
+                }
+            }
+        }
+        */
         
         // Update order payment status
         if (order.paymentStatus !== 'SUCCESS') {

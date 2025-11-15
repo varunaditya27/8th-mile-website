@@ -46,7 +46,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <>
       <html lang="en" suppressHydrationWarning className={`${samarkan.variable} ${akaya.variable} ${fraunces.variable} ${poppins.variable} ${delagothic.variable}`}>
-        <head />
+        <head>
+          <script src="https://sdk.cashfree.com/js/v3/cashfree.js" async></script> # Cashfree SDK
+        </head>
         <body>
           {children}
         </body>

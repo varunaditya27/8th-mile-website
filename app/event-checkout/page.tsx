@@ -145,8 +145,8 @@ export default function EventRegistrationPage() {
       // Calculate the total fee
       const totalFee = calculateTotalFee();
       const merchantOrderId = `8THMILE_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
-      // Create PhonePe order
-      const response = await fetch('/api/phonepe-order', {
+      // Create Cashfree order
+      const response = await fetch('/api/cashfree-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -159,7 +159,6 @@ export default function EventRegistrationPage() {
             teamSize: teamsize,
             teamMembers: formattedTeamMembers,
             feeType: event.feetype,
-            registrationFee: event.registrationFee,
             totalAmount: totalFee,
             merchantOrderId
           }
@@ -172,8 +171,32 @@ export default function EventRegistrationPage() {
         throw new Error(data.message || 'Failed to create payment order');
       }
 
-      // Redirect to PhonePe checkout page
-      window.location.href = data.checkoutPageUrl;
+      // Cashfree SDK to open checkout modal
+      const cashfree = (window as any).Cashfree({
+        mode: process.env.NEXT_PUBLIC_CASHFREE_MODE || 'sandbox'
+      });
+
+      const checkoutOptions = {
+        paymentSessionId: data.paymentSessionId,
+        redirectTarget: '_modal'
+      };
+
+      cashfree.checkout(checkoutOptions).then(function(result: any) {
+        console.log('Checkout completed:', result);
+        if (result.error) {
+          console.log('Payment error:', result.error);
+          setError(result.error.message || 'Payment failed. Please try again.');
+          setIsProcessing(false);
+        } else if (result.paymentDetails) {
+          console.log('Payment details:', result.paymentDetails);
+          // Redirect to verification page
+          window.location.href = `/api/verify?payment_id=${merchantOrderId}`;
+        }
+      }).catch(function(error: any) {
+        console.error('Checkout error:', error);
+        setError('An error occurred during payment. Please try again.');
+        setIsProcessing(false);
+      });
     } catch (err: any) {
       setError(err.message || 'Failed to process registration');
       console.error(err);

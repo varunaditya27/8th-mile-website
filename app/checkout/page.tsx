@@ -59,15 +59,12 @@ export default function CheckoutPage() {
           name,
           email,
           phone,
-          amount: pass.price,
-          teamSize: 1,
-          participants: [name],
           merchantOrderId
         }
       };
 
-      // Call the PhonePe order creation endpoint
-      const response = await fetch('/api/phonepe-order', {
+      // Call the Cashfree order creation endpoint
+      const response = await fetch('/api/cashfree-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(paymentData)
@@ -79,8 +76,32 @@ export default function CheckoutPage() {
         throw new Error(data.message || 'Failed to create payment order');
       }
 
-      // Redirect to PhonePe checkout page
-      window.location.href = data.checkoutPageUrl;
+      // Use Cashfree JS SDK to open checkout modal
+      const cashfree = (window as any).Cashfree({
+        mode: process.env.NEXT_PUBLIC_CASHFREE_MODE || 'sandbox'
+      });
+
+      const checkoutOptions = {
+        paymentSessionId: data.paymentSessionId,
+        redirectTarget: '_modal'
+      };
+
+      cashfree.checkout(checkoutOptions).then(function(result: any) {
+        console.log('Checkout completed:', result);
+        if (result.error) {
+          console.log('Payment error:', result.error);
+          setError(result.error.message || 'Payment failed. Please try again.');
+          setIsProcessing(false);
+        } else if (result.paymentDetails) {
+          console.log('Payment details:', result.paymentDetails);
+          // Redirect to verification page
+          window.location.href = `/api/verify?payment_id=${merchantOrderId}`;
+        }
+      }).catch(function(error: any) {
+        console.error('Checkout error:', error);
+        setError('An error occurred during payment. Please try again.');
+        setIsProcessing(false);
+      });
 
     } catch (err: any) {
       setError(err.message || 'Failed to process payment');
