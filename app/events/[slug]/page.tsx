@@ -122,15 +122,15 @@ const EventDetail = () => {
                 {/* Right Side: Details */}
                 <div className="w-full md:w-1/2 grid grid-cols-1 gap-6">
                     {/* Event Name & Description */}
-                    <div className="bg-black p-4 rounded-lg border border-gray-700">
-                        <p className="text-[#f9dd9c] seasons text-2xl md:text-3xl font-bold text-center">{event.name}</p>
+                    <div className="bg-transparent backdrop-blur-2xl p-4 rounded-lg border border-gray-700">
+                        <p className="text-[#007dc9] seasons text-2xl md:text-4xl text-center">{event.name}</p>
                         <p className="mt-2 text-sm text-center">{event.description}</p>
                     </div>
 
                     <div className="flex flex-col md:flex-row w-full gap-6">
                         {/* Schedule */}
                         <div className="w-full md:w-1/2 bg-transparent backdrop-blur-2xl p-4 rounded-lg border border-gray-300">
-                            <p className="sora text-center font-extrabold text-lg mb-2 text-[#f9dd9c]">Schedule</p>
+                            <p className="sora text-center font-extrabold text-lg mb-2 text-[#25ae80]">Schedule</p>
                             <p className="text-sm text-center md:text-left">Date: {event.date || 'TBA'}</p>
                             {event.time && event.time !== 'X' && <p className="text-sm text-center md:text-left">Time: {event.time}</p>}
                             {event.venue && event.venue !== 'X' && <p className="text-sm text-center md:text-left">Venue: {event.venue}</p>}
@@ -138,8 +138,8 @@ const EventDetail = () => {
 
                         {/* Prizes */}
                         {event.prizes && event.prizes.length > 0 && (
-                            <div className="w-full md:w-1/2 bg-black p-4 rounded-lg border border-[#f9dd9c] shadow-lg">
-                                <p className="text-center sora extra-semibold text-lg mb-2 text-[#f9dd9c]">Prizes</p>
+                            <div className="w-full md:w-1/2 bg-white p-4 rounded-lg border border-[#f6921e] shadow-lg">
+                                <p className="text-center sora extra-semibold text-lg mb-2 text-[#f6921e]">Prizes</p>
                                 <p className="list-disc list-inside text-sm space-y-1 text-center md:text-left">
                                     {event.prizes.map((prize, index) => (
                                         <p key={index}>{prize}</p>
@@ -151,15 +151,15 @@ const EventDetail = () => {
 
                     {/* Registration Info */}
                     <div className="flex flex-col md:flex-row gap-6">
-                        <div className="w-full md:w-1/2 bg-black p-4 border border-gray-700">
-                            <p className="text-center font-extrabold sora text-lg mb-2 text-[#f9dd9c]">Registration Info</p>
+                        <div className="w-full md:w-1/2 bg-white p-4 border border-gray-700">
+                            <p className="text-center font-extrabold sora text-lg mb-2 text-[#fc03a8]">Registration Info</p>
                             <p className="text-sm text-center md:text-left">Amount: <strong>₹{event.registrationFee}</strong> {event.feetype === 'individuals' ? 'per person' : 'per team'}</p>
                             <p className="text-sm mt-1 text-center md:text-left">Team Size: {event.teamsize || '1'}</p>
                         </div>
 
                         {/* Contacts */}
                         {event.contact && event.contact.length > 0 && (
-                            <div className="w-full md:w-1/2 bg-black p-4 rounded-lg border border-gray-700">
+                            <div className="w-full md:w-1/2 bg-white p-4 rounded-lg border border-gray-700">
                                 <p className="text-black text-center font-semibold text-lg mb-2">Contact Details</p>
                                 {event.contact.map((contact, index) => (
                                     <div key={index} className="text-sm mt-1 text-center md:text-left">
@@ -172,8 +172,8 @@ const EventDetail = () => {
 
                     {/* Guidelines */}
                     {event.guidelines && event.guidelines.length > 0 && (
-                        <div className="bg-black p-4 rounded-lg border border-gray-700">
-                            <p className="font-semibold text-lg mb-2 text-[#f9dd9c] text-center">Guidelines</p>
+                        <div className="bg-white p-4 rounded-lg border border-gray-700">
+                            <p className="font-semibold text-lg mb-2 text-[#be1e2d] text-center">Guidelines</p>
                             <ul className="list-disc list-inside text-sm space-y-1">
                                 {event.guidelines.map((g, i) => (
                                     <li key={i}>{g}</li>
