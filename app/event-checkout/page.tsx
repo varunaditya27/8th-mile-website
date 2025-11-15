@@ -187,7 +187,7 @@ export default function EventRegistrationPage() {
   
   return (
     <div className="white-spotted-bg min-h-screen text-white pt-32 pb-10 px-6">
-      <div className="text-3xl font-bold mb-8 text-center text-[#25ae80]">
+      <div className="sora text-3xl font-extrabold mb-8 text-center text-[#25ae80]">
         Register for {event.name}
       </div>
 
@@ -202,7 +202,7 @@ export default function EventRegistrationPage() {
           </button>
         </div>
       ) : (
-        <form onSubmit={handleSubmit} className="max-w-xl mx-auto space-y-6 border border-gray-700 p-6 rounded-lg bg-gray-950 shadow-lg">
+        <form onSubmit={handleSubmit} className="max-w-xl mx-auto space-y-6 border border-gray-700 p-6 rounded-lg bg-gray-50 shadow-lg">
           {/* Name */}
           <div className="space-y-2">
             <label className="block font-medium text-white">
@@ -259,7 +259,7 @@ export default function EventRegistrationPage() {
                 >
                   -
                 </button>
-                <span className="text-lg font-bold text-[#f9dd9c]">{teamsize}</span>
+                <span className="text-lg font-bold text-black">{teamsize}</span>
                 <button
                   type="button"
                   onClick={() => handleTeamsizeChange(teamsize + 1)}
@@ -268,7 +268,7 @@ export default function EventRegistrationPage() {
                   +
                 </button>
               </div>
-              <p className="text-sm text-gray-400">
+              <p className="text-sm text-gray-800">
                 Allowed team size: {event.teamsize}
               </p>
             </div>
@@ -277,7 +277,7 @@ export default function EventRegistrationPage() {
           {/* Team Members */}
           {teamsize > 1 && (
             <div className="space-y-4">
-              <p className="font-bold text-[#f9dd9c]">Team Members</p>
+              <p className="font-bold text-[#fc03a8]">Team Members</p>
               {teamMembers.map((member, index) => (
                 <div key={index} className="space-y-2">
                   <label className="block font-medium text-white">
@@ -323,15 +323,15 @@ export default function EventRegistrationPage() {
           <button
             type="submit"
             disabled={isProcessing}
-            className="w-full py-3 bg-green-600 text-white rounded hover:bg-green-700 disabled:bg-green-300 transition-all"
+            className="sora font-extrabold w-full py-3 bg-green-600 text-white rounded hover:bg-green-700 disabled:bg-green-300 transition-all"
           >
             {isProcessing ? "Processing..." : "Register & Pay Now"}
           </button>
           <div className='flex-col border-[1px] border-gray-600 justify-center items-center p-2'>
             <div className='flex-row justify-center items-center text-gray-600 font-semibold gap-2'>
-              <span className='text-gray-400'>Note</span>
+              <span className='text-gray-800'>Note</span>
             </div>
-            <div className='text-gray-500 text-xs'>
+            <div className='text-gray-800 text-xs'>
               It is advised to take a screenshot of the payment page and save it for future reference. If you find difficulties in finding the email, then check the spam folder as well.
             </div>
           </div>
