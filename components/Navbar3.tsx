@@ -37,30 +37,30 @@ export default function Navbar() {
     return (
         <>
             {/* Desktop Navigation */}
-            <header className="fixed left-1/2 transform -translate-x-1/2 z-50 bg-transparent  p-3 px-8 rounded-2xl transition-all duration-500 ease-in-out w-[100%] mx-auto hidden md:block text-white">
+            <header className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 bg-black backdrop-blur-md p-3 px-8 rounded-2xl shadow-sm shadow-slate-800 transition-all duration-500 ease-in-out w-[90%] max-w-6xl mx-auto hidden md:block text-white">
                 <div className="flex items-center justify-between w-full">
                     {/* Logo */}
                     <Link href="/" className="flex items-center gap-4">
                         <Image
                             src="/RVCE Corner Logo WHITE.png"
                             alt="RVCE Logo"
-                            width={120}
-                            height={120}
-                            className="object-contain h-auto invert"
+                            width={100}
+                            height={100}
+                            className="object-contain h-auto"
                             priority
                         />
-                        <span className="w-[1px] h-[42px] bg-black" />
+                        <span className="w-[1px] h-[42px] bg-white" />
                         <Image
                             src="/8thmilelogocolour.png"
                             alt="8th-Mile"
-                            width={60}
-                            height={60}
+                            width={50}
+                            height={50}
                             className="object-contain"
                         />
                     </Link>
 
                     {/* Desktop Navigation Links */}
-                    <nav className="flex items-center gap-2 text-black">
+                    <nav className="flex items-center gap-2">
                         {navLinks.map((link) =>
                             link.component ? (
                                 <div key={link.name}>{link.component}</div>
@@ -69,8 +69,8 @@ export default function Navbar() {
                                     key={link.name}
                                     href={link.href}
                                     className={cn(
-                                        "sora hover:scale-105 transition-all lg:text-lg duration-200 rounded-xl px-2 py-2 text-gray-800",
-                                        pathname === link.href && "text-black font-bold"
+                                        "poppins font-semibold hover:scale-105 transition-all text-base lg:text-lg duration-200 rounded-xl px-2 py-2",
+                                        pathname === link.href && "text-[#f9dd9c]"
                                     )}
                                 >
                                     {link.name}
