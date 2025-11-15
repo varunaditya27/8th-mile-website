@@ -162,7 +162,7 @@ const EventsPage = () => {
             ).map(([category, events]) => (
                 <div key={category} className="mb-12">
                     {/* Category Heading */}
-                    <h2 className="text-3xl sora font-extrabold text-[#ff7809] mb-6 text-center">
+                    <h2 className="text-3xl sora font-extrabold text-gray-800 mb-6 text-center">
                         {category}
                     </h2>
 
@@ -212,7 +212,7 @@ const EventsPage = () => {
 
 
             {filteredEvents.length === 0 && !loading && (
-                <div className="text-center py-20 text-gray-400">
+                <div className="text-center py-20 text-gray-800">
                     <p className="text-xl">No events found matching your criteria</p>
                     <p className="mt-2">Try changing your search or category filter</p>
                 </div>

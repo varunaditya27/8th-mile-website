@@ -5,7 +5,7 @@ const Loader = () => {
   return (
     <StyledWrapper>
       <div className="min-h-screen loader-container  flex justify-center items-center">
-        <div className="delagothic loader-text text-[#f9dd9c] blinking-text">
+        <div className="delagothic loader-text text-black blinking-text">
           Loading
         </div>
       </div>
@@ -34,13 +34,13 @@ const StyledWrapper = styled.div`
 
 
   .highlight {
-    color: #f9dd9c;
+    color: #000000;
     animation: ${blinkAnimation} 1s infinite;
   }
 
   .blinking-text {
     font-size: 2rem;
-    color: #f9dd9c;
+    color: #000000;
     margin-top: 20px;
     animation: ${blinkAnimation} 3s infinite;
   }
