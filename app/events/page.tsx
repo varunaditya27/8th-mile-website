@@ -146,8 +146,8 @@ const EventsPage = () => {
             {/* Loading state */}
             {loading && (
                 <div className="text-center py-10">
-                    <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-[#f9dd9c] border-r-transparent"></div>
-                    <p className="mt-2 text-[#f9dd9c]">Loading events...</p>
+                    <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-black border-r-transparent"></div>
+                    <p className="mt-2 text-black">Loading events...</p>
                 </div>
             )}
 
