@@ -186,7 +186,7 @@ export default function EventRegistrationPage() {
   if (!event) return <div className="p-8 text-center">Event not found</div>;
   
   return (
-    <div className="white-spotted-bg min-h-screen text-white pt-32 pb-10 px-6">
+    <div className="white-spotted-bg min-h-screen text-black pt-32 pb-10 px-6">
       <div className="sora text-3xl font-extrabold mb-8 text-center text-[#25ae80]">
         Register for {event.name}
       </div>
@@ -205,7 +205,7 @@ export default function EventRegistrationPage() {
         <form onSubmit={handleSubmit} className="max-w-xl mx-auto space-y-6 border border-gray-700 p-6 rounded-lg bg-gray-50 shadow-lg">
           {/* Name */}
           <div className="space-y-2">
-            <label className="block font-medium text-white">
+            <label className="block font-medium text-black">
               Full Name<span className="text-red-500"> *</span>
             </label>
             <input
@@ -219,7 +219,7 @@ export default function EventRegistrationPage() {
 
           {/* Email */}
           <div className="space-y-2">
-            <label className="block font-medium text-white">
+            <label className="block font-medium text-black">
               Email<span className="text-red-500"> *</span>
             </label>
             <input
@@ -233,7 +233,7 @@ export default function EventRegistrationPage() {
 
           {/* Phone */}
           <div className="space-y-2">
-            <label className="block font-medium text-white">
+            <label className="block font-medium text-black">
               Phone<span className="text-red-500"> *</span>
             </label>
             <input
@@ -248,7 +248,7 @@ export default function EventRegistrationPage() {
           {/* Team Size */}
           {event.teamsize !== "1" && (
             <div className="space-y-2">
-              <label className="block font-medium text-white">
+              <label className="block font-medium text-black">
                 Team Size<span className="text-red-500"> *</span>
               </label>
               <div className="flex items-center space-x-4">
@@ -280,7 +280,7 @@ export default function EventRegistrationPage() {
               <p className="font-bold text-[#fc03a8]">Team Members</p>
               {teamMembers.map((member, index) => (
                 <div key={index} className="space-y-2">
-                  <label className="block font-medium text-white">
+                  <label className="block font-medium text-black">
                     {index === 0 ? "Team Leader" : `Member ${index + 1}`}<span className="text-red-500"> *</span>
                   </label>
                   <input
