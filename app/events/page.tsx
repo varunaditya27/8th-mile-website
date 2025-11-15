@@ -176,33 +176,27 @@ const EventsPage = () => {
                                 animate="visible"
                                 transition={{ duration: 0.3, delay: index * 0.1 }}
                                 onClick={() => router.push(`/events/${event.slug}`)}
-                                className="group cursor-pointer h-full perspective"
+                                className="group cursor-pointer aspect-[4/5] w-full perspective"
                             >
                                 <div className="relative h-full w-full transition-transform duration-700 transform-style-preserve-3d group-hover:rotate-y-180">
 
-                                    {/* FRONT — EVENT IMAGE */}
+                                    {/* FRONT – IMAGE */}
                                     <div className="absolute inset-0 backface-hidden rounded-xl overflow-hidden">
-                                        <div className="relative w-full h-full" style={{ paddingBottom: '125%' }}>
-                                            <Image
-                                                src={event.photoPath || '/images/event-placeholder.jpg'}
-                                                alt={event.name}
-                                                fill
-                                                className="object-cover rounded-xl transition-transform duration-500 group-hover:scale-105"
-                                            />
-                                        </div>
+                                        <Image
+                                            src={event.photoPath || '/images/event-placeholder.jpg'}
+                                            alt={event.name}
+                                            fill
+                                            className="object-cover rounded-xl transition-transform duration-500 group-hover:scale-105"
+                                        />
                                     </div>
 
-                                    {/* BACK — NAME + DESCRIPTION */}
+                                    {/* BACK – CONTENT */}
                                     <div className="absolute inset-0 bg-white rounded-xl p-4 flex flex-col items-center justify-center text-center rotate-y-180 backface-hidden shadow-md">
-                                        <p className="sora text-xl font-bold text-black mb-2">
-                                            {event.name}
-                                        </p>
-                                        <p className="text-sm text-gray-700 line-clamp-4">
-                                            {event.description}
-                                        </p>
+                                        <p className="sora text-xl font-bold text-black mb-2">{event.name}</p>
+                                        <p className="text-sm text-gray-700 line-clamp-4">{event.description}</p>
                                     </div>
 
-                                    {/* Overlay for closed registration */}
+                                    {/* CLOSED REGISTRATION OVERLAY */}
                                     {!event.registrationOpen && (
                                         <div className="absolute inset-0 bg-black/80 flex items-center justify-center text-white text-lg font-bold rounded-xl z-20">
                                             Registrations Opening Soon
@@ -210,6 +204,7 @@ const EventsPage = () => {
                                     )}
                                 </div>
                             </motion.div>
+
                         ))}
                     </div>
                 </div>
