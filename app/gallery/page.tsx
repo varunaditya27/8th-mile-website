@@ -91,7 +91,7 @@ const images = [
 
 export default function GallerySection() {
   return (
-    <section className="py-24 px-4 md:py-26 md:px-12 lg:px-24 min-h-screen bg-white ">
+    <section className="py-24 px-4 md:py-26 md:px-12 lg:px-24 min-h-screen gray-grid-bg">
       <div className="text-center mb-8 md:mb-12">
         <div className="seasons py-8 text-3xl md:text-5xl lg:text-6xl text-black drop-shadow-lg">
           Our Vibrant Gallery
