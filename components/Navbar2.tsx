@@ -37,7 +37,7 @@ export default function Navbar() {
     return (
         <>
             {/* Desktop Navigation */}
-            <header className="fixed left-1/2 transform -translate-x-1/2 z-50 bg-transparent  p-3 px-8 rounded-2xl transition-all duration-500 ease-in-out w-[100%] mx-auto hidden md:block text-white">
+            <header className="bg-white z-50  p-3 px-8 rounded-2xl transition-all duration-500 ease-in-out w-[100%] mx-auto hidden md:block text-white">
                 <div className="flex items-center justify-between w-full">
                     {/* Logo */}
                     <Link href="/" className="flex items-center gap-4">
