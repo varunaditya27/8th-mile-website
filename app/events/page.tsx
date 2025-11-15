@@ -176,34 +176,39 @@ const EventsPage = () => {
                                 animate="visible"
                                 transition={{ duration: 0.3, delay: index * 0.1 }}
                                 onClick={() => router.push(`/events/${event.slug}`)}
-                                className={`relative cursor-pointer bg-gray-50 overflow-hidden hover:scale-105 transition-transform shadow-sm h-full flex flex-col shadow-black`}
+                                className="group cursor-pointer h-full perspective"
                             >
-                                {/* Event Image */}
-                                <div className="relative w-full" style={{ paddingBottom: '125%' }}>
-                                    <Image
-                                        src={event.photoPath || '/images/event-placeholder.jpg'}
-                                        alt={event.name}
-                                        fill
-                                        className="object-cover rounded-md"
-                                    />
-                                </div>
+                                <div className="relative h-full w-full transition-transform duration-700 transform-style-preserve-3d group-hover:rotate-y-180">
 
-                                {/* Content */}
-                                <div className="p-4 flex-grow flex flex-col">
-                                    <div className="sora text-xl font-bold text-black mb-2 line-clamp-1">
-                                        {event.name}
+                                    {/* FRONT — EVENT IMAGE */}
+                                    <div className="absolute inset-0 backface-hidden rounded-xl overflow-hidden">
+                                        <div className="relative w-full h-full" style={{ paddingBottom: '125%' }}>
+                                            <Image
+                                                src={event.photoPath || '/images/event-placeholder.jpg'}
+                                                alt={event.name}
+                                                fill
+                                                className="object-cover rounded-xl transition-transform duration-500 group-hover:scale-105"
+                                            />
+                                        </div>
                                     </div>
-                                    <p className="text-sm text-gray-800 mb-3 line-clamp-2 flex-grow">
-                                        {event.description}
-                                    </p>
-                                </div>
 
-                                {/* Overlay for closed registration */}
-                                {!event.registrationOpen && (
-                                    <div className="absolute inset-0 bg-black opacity-80 flex items-center justify-center text-white text-lg font-bold rounded-md">
-                                        Registrations Opening Soon
+                                    {/* BACK — NAME + DESCRIPTION */}
+                                    <div className="absolute inset-0 bg-white rounded-xl p-4 flex flex-col items-center justify-center text-center rotate-y-180 backface-hidden shadow-md">
+                                        <p className="sora text-xl font-bold text-black mb-2">
+                                            {event.name}
+                                        </p>
+                                        <p className="text-sm text-gray-700 line-clamp-4">
+                                            {event.description}
+                                        </p>
                                     </div>
-                                )}
+
+                                    {/* Overlay for closed registration */}
+                                    {!event.registrationOpen && (
+                                        <div className="absolute inset-0 bg-black/80 flex items-center justify-center text-white text-lg font-bold rounded-xl z-20">
+                                            Registrations Opening Soon
+                                        </div>
+                                    )}
+                                </div>
                             </motion.div>
                         ))}
                     </div>
