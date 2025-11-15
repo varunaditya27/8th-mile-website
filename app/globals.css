@@ -112,6 +112,13 @@ html, body {
   background-attachment: fixed;
 }
 
+.white-spotted-bg {
+  background-image: url('/white-spotted.svg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
 .seasons {
   font-family: var(--font-seasons);
 }
