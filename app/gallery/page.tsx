@@ -91,11 +91,11 @@ const images = [
 
 export default function GallerySection() {
   return (
-    <section className="py-24 px-4 md:py-26 md:px-12 lg:px-24 min-h-screen bg-black ">
+    <section className="py-24 px-4 md:py-26 md:px-12 lg:px-24 min-h-screen gray-grid-bg">
       <div className="text-center mb-8 md:mb-12">
-        <h2 className="py-8 text-3xl md:text-5xl lg:text-6xl font-bold text-[#f9dd9c] drop-shadow-lg">
+        <div className="seasons py-8 text-3xl md:text-5xl lg:text-6xl text-black drop-shadow-lg">
           Our Vibrant Gallery
-        </h2>
+        </div>
       </div>
 
       {/* Mobile gallery (1 column) */}
@@ -120,7 +120,7 @@ export default function GallerySection() {
                     {/* Vignette overlay */}
                     <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black opacity-0 group-hover:opacity-80 transition-opacity duration-300"></div>
                     {/* Caption */}
-                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-center text-[#f9dd9c] text-lg opacity-0 group-hover:opacity-100 transition-all duration-300">
+                    <div className="sora absolute bottom-4 left-1/2 -translate-x-1/2 text-center text-white text-lg opacity-0 group-hover:opacity-100 transition-all duration-300">
                       {image.caption}
                     </div>
                   </div>
@@ -149,7 +149,7 @@ export default function GallerySection() {
                     {/* Vignette overlay */}
                     <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black opacity-0 group-hover:opacity-80 transition-opacity duration-500"></div>
                     {/* Caption */}
-                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-center text-[#f9dd9c] text-xl opacity-0 group-hover:opacity-100 transition-all duration-500">
+                    <div className="sora font-extrabold absolute bottom-4 left-1/2 -translate-x-1/2 text-center text-white text-xl opacity-0 group-hover:opacity-100 transition-all duration-500">
                       {image.caption}
                     </div>
                   </div>

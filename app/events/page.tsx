@@ -105,10 +105,10 @@ const EventsPage = () => {
     };
 
     return (
-        <div className="bg-black min-h-screen text-white py-32 px-6">
+        <div className="squiggly-bg min-h-screen text-white py-32 px-6">
             {/* Page Heading */}
             <motion.div
-                className="samarkan text-7xl text-[#f9dd9c] text-center mb-6"
+                className="seasons text-7xl text-black text-center mb-6"
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5 }}
@@ -146,73 +146,73 @@ const EventsPage = () => {
             {/* Loading state */}
             {loading && (
                 <div className="text-center py-10">
-                    <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-[#f9dd9c] border-r-transparent"></div>
-                    <p className="mt-2 text-[#f9dd9c]">Loading events...</p>
+                    <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-black border-r-transparent"></div>
+                    <p className="mt-2 text-black">Loading events...</p>
                 </div>
             )}
 
             {/* Event Cards grouped by category */}
-{Object.entries(
-    filteredEvents.reduce((acc: Record<string, Event[]>, event) => {
-        const cat = event.category || 'Other';
-        if (!acc[cat]) acc[cat] = [];
-        acc[cat].push(event);
-        return acc;
-    }, {})
-).map(([category, events]) => (
-    <div key={category} className="mb-12">
-        {/* Category Heading */}
-        <h2 className="text-3xl font-extrabold text-[#f9dd9c] mb-6 text-center">
-            {category}
-        </h2>
+            {Object.entries(
+                filteredEvents.reduce((acc: Record<string, Event[]>, event) => {
+                    const cat = event.category || 'Other';
+                    if (!acc[cat]) acc[cat] = [];
+                    acc[cat].push(event);
+                    return acc;
+                }, {})
+            ).map(([category, events]) => (
+                <div key={category} className="mb-12">
+                    {/* Category Heading */}
+                    <h2 className="text-3xl sora font-extrabold text-gray-800 mb-6 text-center">
+                        {category}
+                    </h2>
 
-        {/* Event Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 xl:grid-cols-5 gap-6 md:gap-8">
-            {events.map((event, index) => (
-                <motion.div
-                    key={event.id || event._id || event.slug}
-                    variants={fadeInUp}
-                    initial="hidden"
-                    animate="visible"
-                    transition={{ duration: 0.3, delay: index * 0.1 }}
-                    onClick={() => router.push(`/events/${event.slug}`)}
-                    className={`relative cursor-pointer bg-black overflow-hidden hover:scale-105 transition-transform shadow-sm h-full flex flex-col shadow-slate-800`}
-                >
-                    {/* Event Image */}
-                    <div className="relative w-full" style={{ paddingBottom: '125%' }}>
-                        <Image
-                            src={event.photoPath || '/images/event-placeholder.jpg'}
-                            alt={event.name}
-                            fill
-                            className="object-cover rounded-md"
-                        />
+                    {/* Event Grid */}
+                    <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 xl:grid-cols-5 gap-6 md:gap-8">
+                        {events.map((event, index) => (
+                            <motion.div
+                                key={event.id || event._id || event.slug}
+                                variants={fadeInUp}
+                                initial="hidden"
+                                animate="visible"
+                                transition={{ duration: 0.3, delay: index * 0.1 }}
+                                onClick={() => router.push(`/events/${event.slug}`)}
+                                className="group cursor-pointer aspect-[4/5] w-full perspective"
+                            >
+                                <div className="relative h-full w-full transition-transform duration-700 transform-style-preserve-3d group-hover:rotate-y-180">
+
+                                    {/* FRONT – IMAGE */}
+                                    <div className="absolute inset-0 backface-hidden rounded-xl overflow-hidden">
+                                        <Image
+                                            src={event.photoPath || '/images/event-placeholder.jpg'}
+                                            alt={event.name}
+                                            fill
+                                            className="object-cover rounded-xl transition-transform duration-500 group-hover:scale-105"
+                                        />
+                                    </div>
+
+                                    {/* BACK – CONTENT */}
+                                    <div className="absolute inset-0 bg-white rounded-xl p-4 flex flex-col items-center justify-center text-center rotate-y-180 backface-hidden shadow-md">
+                                        <p className="sora text-xl font-bold text-black mb-2">{event.name}</p>
+                                        <p className="text-sm text-gray-700 line-clamp-4">{event.description}</p>
+                                    </div>
+
+                                    {/* CLOSED REGISTRATION OVERLAY */}
+                                    {!event.registrationOpen && (
+                                        <div className="absolute inset-0 bg-black/80 flex items-center justify-center text-white text-lg font-bold rounded-xl z-20">
+                                            Registrations Opening Soon
+                                        </div>
+                                    )}
+                                </div>
+                            </motion.div>
+
+                        ))}
                     </div>
-
-                    {/* Content */}
-                    <div className="p-4 flex-grow flex flex-col">
-                        <div className="text-xl font-bold text-[#f9dd9c] mb-2 line-clamp-1">
-                            {event.name}
-                        </div>
-                        <p className="text-sm text-gray-300 mb-3 line-clamp-2 flex-grow">
-                            {event.description}
-                        </p>
-                    </div>
-
-                    {/* Overlay for closed registration */}
-                    {!event.registrationOpen && (
-                        <div className="absolute inset-0 bg-black opacity-80 flex items-center justify-center text-white text-lg font-bold rounded-md">
-                            Registrations Opening Soon
-                        </div>
-                    )}
-                </motion.div>
+                </div>
             ))}
-        </div>
-    </div>
-))}
 
 
             {filteredEvents.length === 0 && !loading && (
-                <div className="text-center py-20 text-gray-400">
+                <div className="text-center py-20 text-gray-800">
                     <p className="text-xl">No events found matching your criteria</p>
                     <p className="mt-2">Try changing your search or category filter</p>
                 </div>
