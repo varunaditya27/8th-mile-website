@@ -38,6 +38,10 @@ const orderSchema = new mongoose.Schema({
     enum: ['PENDING', 'SUCCESS', 'FAILED'],
     required: true
   },
+  cashfreeStatus: {
+    type: String,
+    default: 'ACTIVE'
+  },
   mailSent: {
     type: Boolean,
     default: false

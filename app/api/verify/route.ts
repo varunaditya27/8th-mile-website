@@ -134,6 +134,11 @@ export async function GET(request: Request) {
             }
 
             const cashfreeData = await cashfreeResponse.json();
+            console.log('Cashfree order status:', cashfreeData.order_status);
+
+            // Update cashfree status in database
+            order.cashfreeStatus = cashfreeData.order_status;
+            await order.save();
 
             if (cashfreeData.order_status === 'ACTIVE') {
                 await new Promise(resolve => setTimeout(resolve, 5000));
@@ -153,10 +158,22 @@ export async function GET(request: Request) {
                     const retryData = await retryResponse.json();
                     console.log('Retry check - Order status:', retryData.order_status);
                     
+                    // Update cashfree status again
+                    order.cashfreeStatus = retryData.order_status;
+                    
                     if (retryData.order_status === 'PAID') {
                         console.log('Payment verified as PAID after retry');
-                    } else {
+                    } else if (retryData.order_status === 'ACTIVE') {
+                        // Still processing, update status and redirect to failed page
+                        order.paymentStatus = 'PENDING';
+                        await order.save();
                         console.log('Payment still processing after retry');
+                        return NextResponse.redirect(new URL(`/failed?payment_id=${paymentId}`, request.url));
+                    } else {
+                        // Any other status (FAILED, CANCELLED, etc.)
+                        order.paymentStatus = 'FAILED';
+                        await order.save();
+                        console.log('Payment failed after retry:', retryData.order_status);
                         return NextResponse.redirect(new URL(`/failed?payment_id=${paymentId}`, request.url));
                     }
                 } else {
@@ -166,8 +183,11 @@ export async function GET(request: Request) {
                     }, { status: 500 });
                 }
             } else if (cashfreeData.order_status !== 'PAID') {
+                // Handle all non-PAID statuses: FAILED, CANCELLED, EXPIRED, etc.
+                order.paymentStatus = 'FAILED';
+                await order.save();
                 console.log('Payment failed or order status unknown:', cashfreeData.order_status);
-                return NextResponse.redirect(new URL(`/failed`, request.url));
+                return NextResponse.redirect(new URL(`/failed?payment_id=${paymentId}`, request.url));
             } else {
                 console.log('Payment verified as PAID immediately');
             }
