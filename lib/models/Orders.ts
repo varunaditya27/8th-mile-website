@@ -14,7 +14,7 @@ const orderSchema = new mongoose.Schema({
   // Payment provider tracking
   provider: {
     type: String,
-    enum: ['phonepe', 'cashfree', 'razorpay'],
+    enum: ['cashfree'],
     default: 'cashfree',
     index: true
   },

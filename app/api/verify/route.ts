@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextResponse } from "next/server";
-// import { client } from "@/lib/phonepay";
 import Order from "@/lib/models/Orders";
 import Registration from "@/lib/models/Registrations";
 import { connectToDatabase } from "@/lib/db";
@@ -101,16 +100,8 @@ export async function GET(request: Request) {
 
     try {
         await connectToDatabase();
-        const response = await client.getOrderStatus(paymentId);
-        console.log(response)
-        if (response.state !== "COMPLETED") {
-            if(response.state === "FAILED"){
-                return NextResponse.redirect(new URL(`/failed`, request.url))
-            } else {
-                return NextResponse.json({ success: false, message: 'Something Went Wrong' }, {status: 400});
-            }
-        }
-
+        
+        // Find the order first
         const order = await Order.findOne({ merchantOrderId: paymentId });
         if (!order) {
             return NextResponse.json(
@@ -119,7 +110,7 @@ export async function GET(request: Request) {
             );
         }
 
-        // using cashfree payment verification as the sole payment provider
+        // Cashfree payment verification (sole payment provider)
         try {
             // Make direct API call to Cashfree to verify order status (using SDK in the api/cashfree-order route)
             const cashfreeApiUrl = process.env.NEXT_PUBLIC_CASHFREE_MODE === 'production'
@@ -143,35 +134,47 @@ export async function GET(request: Request) {
             }
 
             const cashfreeData = await cashfreeResponse.json();
-            console.log('Cashfree order status:', cashfreeData);
-            
-            if (cashfreeData.order_status === 'PAID') {
-                // Payment successful, proceed with registration
-            } else if (cashfreeData.order_status === 'ACTIVE') {
-                return NextResponse.json({ success: false, message: 'Payment pending. Please complete the payment.' }, { status: 400 });
-            } else {
+
+            if (cashfreeData.order_status === 'ACTIVE') {
+                await new Promise(resolve => setTimeout(resolve, 5000));
+                
+                // retrying to fetch order status
+                const retryResponse = await fetch(`${cashfreeApiUrl}/orders/${order.cashfreeOrderId}`, {
+                    method: 'GET',
+                    headers: {
+                        'accept': 'application/json',
+                        'x-api-version': '2023-08-01',
+                        'x-client-id': process.env.NEXT_PUBLIC_CASHFREE_CLIENT_ID as string,
+                        'x-client-secret': process.env.CASHFREE_CLIENT_SECRET as string
+                    }
+                });
+                
+                if (retryResponse.ok) {
+                    const retryData = await retryResponse.json();
+                    console.log('Retry check - Order status:', retryData.order_status);
+                    
+                    if (retryData.order_status === 'PAID') {
+                        console.log('Payment verified as PAID after retry');
+                    } else {
+                        console.log('Payment still processing after retry');
+                        return NextResponse.redirect(new URL(`/failed?payment_id=${paymentId}`, request.url));
+                    }
+                } else {
+                    return NextResponse.json({ 
+                        success: false, 
+                        message: 'Unable to verify payment status. Please try again.' 
+                    }, { status: 500 });
+                }
+            } else if (cashfreeData.order_status !== 'PAID') {
                 console.log('Payment failed or order status unknown:', cashfreeData.order_status);
                 return NextResponse.redirect(new URL(`/failed`, request.url));
+            } else {
+                console.log('Payment verified as PAID immediately');
             }
         } catch (cfError) {
             console.error('Cashfree verification error:', cfError);
             return NextResponse.json({ success: false, message: 'Payment verification failed' }, { status: 500 });
-        }
-
-        /* PhonePe verification code - commented out to avoid any issues
-        if (order.provider === 'phonepe') {
-            const response = await client.getOrderStatus(paymentId);
-            console.log('PhonePe order status:', response);
-            
-            if (response.state !== "COMPLETED") {
-                if(response.state === "FAILED"){
-                    return NextResponse.redirect(new URL(`/failed`, request.url));
-                } else {
-                    return NextResponse.json({ success: false, message: 'Something Went Wrong' }, {status: 400});
-                }
-            }
-        }
-        */
+        }        
         
         // Update order payment status
         if (order.paymentStatus !== 'SUCCESS') {

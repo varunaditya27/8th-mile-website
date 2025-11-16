@@ -1,7 +1,11 @@
 // src/app/payment/failed/page.tsx
+'use client';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 
 export default function FailedPage() {
+  const searchParams = useSearchParams();
+  const paymentId = searchParams.get('payment_id');
   return (
     <div className="min-h-screen flex items-center justify-center p-6 bg-background">
       <div className="max-w-md w-full bg-card p-8 shadow-lg rounded-lg border-2 border-muted/20">
@@ -25,6 +29,9 @@ export default function FailedPage() {
           <p className="text-muted-foreground mt-1">
             We couldn&apos;t process your payment
           </p>
+          {paymentId && (<p className="text-muted-foreground mt-1">
+            Reference id: {paymentId}
+          </p>)}
         </div>
 
         <div className="bg-muted/20 p-4 rounded my-4">
