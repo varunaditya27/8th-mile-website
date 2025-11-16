@@ -11,16 +11,7 @@ const orderSchema = new mongoose.Schema({
 //  phonePayOrderId: String,      commented out as Cashfree is being used
   cashfreeOrderId: String,
   
-  // Payment provider tracking
-  provider: {
-    type: String,
-    enum: ['cashfree'],
-    default: 'cashfree',
-    index: true
-  },
-  
   // Generic provider fields
-  providerOrderId: { type: String, index: true, sparse: true },
   providerPaymentId: { type: String, index: true, sparse: true },
   paymentSessionId: { type: String, sparse: true },
   paymentLink: String,
@@ -92,7 +83,7 @@ const orderSchema = new mongoose.Schema({
 orderSchema.index({ merchantOrderId: 1 }, { unique: true, sparse: true });
 orderSchema.index({ cashfreeOrderId: 1 }, { sparse: true });
 orderSchema.index({ createdAt: -1 });
-orderSchema.index({ provider: 1, paymentStatus: 1 });
+orderSchema.index({ paymentStatus: 1 });
 
 // Create or retrieve model
 const Order = mongoose.models.Order || 

@@ -141,9 +141,7 @@ export async function POST(req: NextRequest) {
             const order = new Order({
                 _id: response.cfOrder.orderId,
                 merchantOrderId,
-                cashfreeOrderId: response.cfOrder.orderId,
-                provider: 'cashfree',
-                providerOrderId: response.cfOrder.orderId,
+                cashfreeOrderId: response.cfOrder.cfOrderId,
                 paymentSessionId: response.cfOrder.paymentSessionId,
                 currency: 'INR',
                 mode: paymentMode,
