@@ -87,7 +87,6 @@ const orderSchema = new mongoose.Schema({
 // Indexes for performance
 orderSchema.index({ merchantOrderId: 1 }, { unique: true, sparse: true });
 orderSchema.index({ cashfreeOrderId: 1 }, { sparse: true });
-orderSchema.index({ providerOrderId: 1 }, { sparse: true });
 orderSchema.index({ createdAt: -1 });
 orderSchema.index({ provider: 1, paymentStatus: 1 });
 
