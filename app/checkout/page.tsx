@@ -25,6 +25,15 @@ export default function CheckoutPage() {
   const [isRedirecting,] = useState(false);
 
   useEffect(() => {
+    // Check if returning from Cashfree with error
+    const urlParams = new URLSearchParams(window.location.search);
+    const orderId = urlParams.get('order_id');
+    if (orderId) {
+      // Redirected from Cashfree after payment attempt
+      window.location.href = `/api/verify?payment_id=${orderId}`;
+      return;
+    }
+
     if (!passId) {
       setError('No pass selected');
       setLoading(false);
@@ -59,15 +68,12 @@ export default function CheckoutPage() {
           name,
           email,
           phone,
-          amount: pass.price,
-          teamSize: 1,
-          participants: [name],
           merchantOrderId
         }
       };
 
-      // Call the PhonePe order creation endpoint
-      const response = await fetch('/api/phonepe-order', {
+      // Call the Cashfree order creation endpoint
+      const response = await fetch('/api/cashfree-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(paymentData)
@@ -79,8 +85,19 @@ export default function CheckoutPage() {
         throw new Error(data.message || 'Failed to create payment order');
       }
 
-      // Redirect to PhonePe checkout page
-      window.location.href = data.checkoutPageUrl;
+      // Use Cashfree JS SDK for redirect-based checkout
+      const cashfree = (window as any).Cashfree({
+        mode: process.env.NEXT_PUBLIC_CASHFREE_MODE || 'sandbox'
+      });
+
+      const checkoutOptions = {
+        paymentSessionId: data.paymentSessionId,
+        redirectTarget: '_self' // Redirect in same window
+      };
+
+      // This will redirect the user to Cashfree's hosted payment page
+      // After payment, Cashfree will redirect back to the returnUrl configured in the order (/api/verify)
+      cashfree.checkout(checkoutOptions);
 
     } catch (err: any) {
       setError(err.message || 'Failed to process payment');

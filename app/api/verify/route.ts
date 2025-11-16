@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextResponse } from "next/server";
-import { client } from "@/lib/phonepay";
 import Order from "@/lib/models/Orders";
 import Registration from "@/lib/models/Registrations";
 import { connectToDatabase } from "@/lib/db";
@@ -101,16 +100,8 @@ export async function GET(request: Request) {
 
     try {
         await connectToDatabase();
-        const response = await client.getOrderStatus(paymentId);
-        console.log(response)
-        if (response.state !== "COMPLETED") {
-            if(response.state === "FAILED"){
-                return NextResponse.redirect(new URL(`/failed`, request.url))
-            } else {
-                return NextResponse.json({ success: false, message: 'Something Went Wrong' }, {status: 400});
-            }
-        }
-
+        
+        // Find the order first
         const order = await Order.findOne({ merchantOrderId: paymentId });
         if (!order) {
             return NextResponse.json(
@@ -118,6 +109,92 @@ export async function GET(request: Request) {
                 { status: 404 }
             );
         }
+
+        // Cashfree payment verification (sole payment provider)
+        try {
+            // Make direct API call to Cashfree to verify order status using merchantOrderId
+            const cashfreeApiUrl = process.env.NEXT_PUBLIC_CASHFREE_MODE === 'production'
+                ? 'https://api.cashfree.com/pg'
+                : 'https://sandbox.cashfree.com/pg';
+            
+            const cashfreeResponse = await fetch(`${cashfreeApiUrl}/orders/${order.merchantOrderId}`, {
+                method: 'GET',
+                headers: {
+                    'accept': 'application/json',
+                    'x-api-version': '2023-08-01',
+                    'x-client-id': process.env.NEXT_PUBLIC_CASHFREE_CLIENT_ID as string,
+                    'x-client-secret': process.env.CASHFREE_CLIENT_SECRET as string
+                }
+            });
+
+            // remove console log in production
+            if (!cashfreeResponse.ok) {
+                console.error('Cashfree API error:', await cashfreeResponse.text());
+                return NextResponse.json({ success: false, message: 'Payment verification failed' }, { status: 500 });
+            }
+
+            const cashfreeData = await cashfreeResponse.json();
+            console.log('Cashfree order status:', cashfreeData.order_status);
+
+            // Update cashfree status in database
+            order.cashfreeStatus = cashfreeData.order_status;
+            await order.save();
+
+            if (cashfreeData.order_status === 'ACTIVE') {
+                await new Promise(resolve => setTimeout(resolve, 5000));
+                
+                // retrying to fetch order status
+                const retryResponse = await fetch(`${cashfreeApiUrl}/orders/${order.merchantOrderId}`, {
+                    method: 'GET',
+                    headers: {
+                        'accept': 'application/json',
+                        'x-api-version': '2023-08-01',
+                        'x-client-id': process.env.NEXT_PUBLIC_CASHFREE_CLIENT_ID as string,
+                        'x-client-secret': process.env.CASHFREE_CLIENT_SECRET as string
+                    }
+                });
+                
+                if (retryResponse.ok) {
+                    const retryData = await retryResponse.json();
+                    console.log('Retry check - Order status:', retryData.order_status);
+                    
+                    // Update cashfree status again
+                    order.cashfreeStatus = retryData.order_status;
+                    
+                    if (retryData.order_status === 'PAID') {
+                        console.log('Payment verified as PAID after retry');
+                    } else if (retryData.order_status === 'ACTIVE') {
+                        // Still processing, update status and redirect to failed page
+                        order.paymentStatus = 'PENDING';
+                        await order.save();
+                        console.log('Payment still processing after retry');
+                        return NextResponse.redirect(new URL(`/failed?payment_id=${paymentId}`, request.url));
+                    } else {
+                        // Any other status (FAILED, CANCELLED, etc.)
+                        order.paymentStatus = 'FAILED';
+                        await order.save();
+                        console.log('Payment failed after retry:', retryData.order_status);
+                        return NextResponse.redirect(new URL(`/failed?payment_id=${paymentId}`, request.url));
+                    }
+                } else {
+                    return NextResponse.json({ 
+                        success: false, 
+                        message: 'Unable to verify payment status. Please try again.' 
+                    }, { status: 500 });
+                }
+            } else if (cashfreeData.order_status !== 'PAID') {
+                // Handle all non-PAID statuses: FAILED, CANCELLED, EXPIRED, etc.
+                order.paymentStatus = 'FAILED';
+                await order.save();
+                console.log('Payment failed or order status unknown:', cashfreeData.order_status);
+                return NextResponse.redirect(new URL(`/failed?payment_id=${paymentId}`, request.url));
+            } else {
+                console.log('Payment verified as PAID immediately');
+            }
+        } catch (cfError) {
+            console.error('Cashfree verification error:', cfError);
+            return NextResponse.json({ success: false, message: 'Payment verification failed' }, { status: 500 });
+        }        
         
         // Update order payment status
         if (order.paymentStatus !== 'SUCCESS') {

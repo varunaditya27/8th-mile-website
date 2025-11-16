@@ -8,20 +8,43 @@ const participantSchema = new mongoose.Schema({
 const orderSchema = new mongoose.Schema({
   _id: String, 
   merchantOrderId: String,
-  phonePayOrderId: String,
+//  phonePayOrderId: String,      commented out as Cashfree is being used
+  cashfreeOrderId: String,
+  
+  // Generic provider fields
+  providerPaymentId: { type: String, index: true, sparse: true },
+  paymentSessionId: { type: String, sparse: true },
+  paymentLink: String,
+  
+  // Payment metadata
+  currency: { type: String, default: 'INR' },
+  mode: {
+    type: String,
+    enum: ['sandbox', 'production'],
+    default: 'sandbox'
+  },
+  
   paymentStatus: { 
     type: String, 
     enum: ['PENDING', 'SUCCESS', 'FAILED'],
     required: true
   },
+  cashfreeStatus: {
+    type: String,
+    default: 'ACTIVE'
+  },
   mailSent: {
     type: Boolean,
     default: false
   },
+  
+  // Customer details
   name: String,
   email: String,
   phone: String,
   amount: Number,
+  
+  // Order type
   type: { 
     type: String, 
     enum: ['pass', 'event'],
@@ -33,6 +56,16 @@ const orderSchema = new mongoose.Schema({
     default: 1
   },
   participantsData: [participantSchema],
+  
+  // Audit and webhook tracking
+  rawPaymentResponse: mongoose.Schema.Types.Mixed,
+  webhookSignature: String,
+  webhookVerifiedAt: Date,
+  
+  // Refund tracking
+  refundedAt: Date,
+  refundInfo: mongoose.Schema.Types.Mixed,
+  
   createdAt: {
     type: Date,
     default: Date.now
@@ -45,6 +78,12 @@ const orderSchema = new mongoose.Schema({
   collection: 'orders',
   timestamps: true
 });
+
+// Indexes for performance
+orderSchema.index({ merchantOrderId: 1 }, { unique: true, sparse: true });
+orderSchema.index({ cashfreeOrderId: 1 }, { sparse: true });
+orderSchema.index({ createdAt: -1 });
+orderSchema.index({ paymentStatus: 1 });
 
 // Create or retrieve model
 const Order = mongoose.models.Order || 

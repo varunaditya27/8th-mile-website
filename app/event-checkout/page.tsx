@@ -23,6 +23,15 @@ export default function EventRegistrationPage() {
   const [isRedirecting,] = useState(false);
   
   useEffect(() => {
+    // Check if returning from Cashfree with error
+    const urlParams = new URLSearchParams(window.location.search);
+    const orderId = urlParams.get('order_id');
+    if (orderId) {
+      // Redirected from Cashfree after payment attempt
+      window.location.href = `/api/verify?payment_id=${orderId}`;
+      return;
+    }
+
     const slug = searchParams.get('slug');
     
     if (!slug) {
@@ -145,8 +154,8 @@ export default function EventRegistrationPage() {
       // Calculate the total fee
       const totalFee = calculateTotalFee();
       const merchantOrderId = `8THMILE_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
-      // Create PhonePe order
-      const response = await fetch('/api/phonepe-order', {
+      // Create Cashfree order
+      const response = await fetch('/api/cashfree-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -159,7 +168,6 @@ export default function EventRegistrationPage() {
             teamSize: teamsize,
             teamMembers: formattedTeamMembers,
             feeType: event.feetype,
-            registrationFee: event.registrationFee,
             totalAmount: totalFee,
             merchantOrderId
           }
@@ -172,8 +180,20 @@ export default function EventRegistrationPage() {
         throw new Error(data.message || 'Failed to create payment order');
       }
 
-      // Redirect to PhonePe checkout page
-      window.location.href = data.checkoutPageUrl;
+      // Use Cashfree JS SDK for redirect-based checkout
+      const cashfree = (window as any).Cashfree({
+        mode: process.env.NEXT_PUBLIC_CASHFREE_MODE || 'sandbox'
+      });
+
+      const checkoutOptions = {
+        paymentSessionId: data.paymentSessionId,
+        redirectTarget: '_self' // Redirect in same window
+      };
+
+      // This will redirect the user to Cashfree's hosted payment page
+      // After payment, Cashfree will redirect back to the returnUrl configured in the order (/api/verify)
+      cashfree.checkout(checkoutOptions);
+
     } catch (err: any) {
       setError(err.message || 'Failed to process registration');
       console.error(err);
