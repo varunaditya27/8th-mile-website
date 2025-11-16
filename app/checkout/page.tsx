@@ -90,17 +90,21 @@ export default function CheckoutPage() {
         console.log('Checkout completed:', result);
         if (result.error) {
           console.log('Payment error:', result.error);
-          setError(result.error.message || 'Payment failed. Please try again.');
-          setIsProcessing(false);
+          // Redirect to failure page
+          window.location.href = `/failed?payment_id=${merchantOrderId}`;
         } else if (result.paymentDetails) {
           console.log('Payment details:', result.paymentDetails);
           // Redirect to verification page
           window.location.href = `/api/verify?payment_id=${merchantOrderId}`;
+        } else {
+          // Handle case when modal is closed without completing payment
+          console.log('Payment modal closed without completion');
+          window.location.href = `/failed?payment_id=${merchantOrderId}`;
         }
       }).catch(function(error: any) {
         console.error('Checkout error:', error);
-        setError('An error occurred during payment. Please try again.');
-        setIsProcessing(false);
+        // Redirect to failure page
+        window.location.href = `/failed?payment_id=${merchantOrderId}`;
       });
 
     } catch (err: any) {
