@@ -112,12 +112,12 @@ export async function GET(request: Request) {
 
         // Cashfree payment verification (sole payment provider)
         try {
-            // Make direct API call to Cashfree to verify order status (using SDK in the api/cashfree-order route)
+            // Make direct API call to Cashfree to verify order status using merchantOrderId
             const cashfreeApiUrl = process.env.NEXT_PUBLIC_CASHFREE_MODE === 'production'
                 ? 'https://api.cashfree.com/pg'
                 : 'https://sandbox.cashfree.com/pg';
             
-            const cashfreeResponse = await fetch(`${cashfreeApiUrl}/orders/${order.cashfreeOrderId}`, {
+            const cashfreeResponse = await fetch(`${cashfreeApiUrl}/orders/${order.merchantOrderId}`, {
                 method: 'GET',
                 headers: {
                     'accept': 'application/json',
@@ -144,7 +144,7 @@ export async function GET(request: Request) {
                 await new Promise(resolve => setTimeout(resolve, 5000));
                 
                 // retrying to fetch order status
-                const retryResponse = await fetch(`${cashfreeApiUrl}/orders/${order.cashfreeOrderId}`, {
+                const retryResponse = await fetch(`${cashfreeApiUrl}/orders/${order.merchantOrderId}`, {
                     method: 'GET',
                     headers: {
                         'accept': 'application/json',

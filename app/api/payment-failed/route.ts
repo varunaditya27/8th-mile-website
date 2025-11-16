@@ -26,12 +26,12 @@ export async function POST(request: Request) {
             );
         }
 
-        // Verify payment status from Cashfree
+        // Verify payment status from Cashfree using merchantOrderId
         const cashfreeApiUrl = process.env.NEXT_PUBLIC_CASHFREE_MODE === 'production'
             ? 'https://api.cashfree.com/pg'
             : 'https://sandbox.cashfree.com/pg';
         
-        const cashfreeResponse = await fetch(`${cashfreeApiUrl}/orders/${order.cashfreeOrderId}`, {
+        const cashfreeResponse = await fetch(`${cashfreeApiUrl}/orders/${order.merchantOrderId}`, {
             method: 'GET',
             headers: {
                 'accept': 'application/json',

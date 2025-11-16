@@ -23,6 +23,15 @@ export default function EventRegistrationPage() {
   const [isRedirecting,] = useState(false);
   
   useEffect(() => {
+    // Check if returning from Cashfree with error
+    const urlParams = new URLSearchParams(window.location.search);
+    const orderId = urlParams.get('order_id');
+    if (orderId) {
+      // Redirected from Cashfree after payment attempt
+      window.location.href = `/api/verify?payment_id=${orderId}`;
+      return;
+    }
+
     const slug = searchParams.get('slug');
     
     if (!slug) {
@@ -171,36 +180,20 @@ export default function EventRegistrationPage() {
         throw new Error(data.message || 'Failed to create payment order');
       }
 
-      // Cashfree SDK to open checkout modal
+      // Use Cashfree JS SDK for redirect-based checkout
       const cashfree = (window as any).Cashfree({
         mode: process.env.NEXT_PUBLIC_CASHFREE_MODE || 'sandbox'
       });
 
       const checkoutOptions = {
         paymentSessionId: data.paymentSessionId,
-        redirectTarget: '_modal'
+        redirectTarget: '_self' // Redirect in same window
       };
 
-      cashfree.checkout(checkoutOptions).then(function(result: any) {
-        console.log('Checkout completed:', result);
-        if (result.error) {
-          console.log('Payment error:', result.error);
-          // Redirect to failure page
-          window.location.href = `/failed?payment_id=${merchantOrderId}`;
-        } else if (result.paymentDetails) {
-          console.log('Payment details:', result.paymentDetails);
-          // Redirect to verification page
-          window.location.href = `/api/verify?payment_id=${merchantOrderId}`;
-        } else {
-          // Handle case when modal is closed without completing payment
-          console.log('Payment modal closed without completion');
-          window.location.href = `/failed?payment_id=${merchantOrderId}`;
-        }
-      }).catch(function(error: any) {
-        console.error('Checkout error:', error);
-        // Redirect to failure page
-        window.location.href = `/failed?payment_id=${merchantOrderId}`;
-      });
+      // This will redirect the user to Cashfree's hosted payment page
+      // After payment, Cashfree will redirect back to the returnUrl configured in the order (/api/verify)
+      cashfree.checkout(checkoutOptions);
+
     } catch (err: any) {
       setError(err.message || 'Failed to process registration');
       console.error(err);
