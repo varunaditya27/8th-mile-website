@@ -17,9 +17,6 @@ export default function Sidebar() {
       {/* Desktop Sidebar (Always visible on desktop) */}
       <div className="hidden md:flex flex-col gap-4 items-center">
         {/* <ThemeTogglerButton /> */}
-        <a href="https://www.linkedin.com" target="_blank" rel="noopener noreferrer">
-          <FaLinkedin size={24} className="invert hover:scale-110 transition-transform text-foreground" />
-        </a>
         <a href="https://www.instagram.com/8thmile.rvce?igsh=MWxmYWl6aDJ0dTYy">
           <FaInstagram size={24} className="invert hover:scale-110 transition-transform text-foreground" />
         </a>
@@ -55,9 +52,6 @@ export default function Sidebar() {
             isOpen ? "opacity-100 max-h-40 mt-2 py-1" : "opacity-0 max-h-0 overflow-hidden"
           )}
         >
-          <a href="https://www.linkedin.com" target="_blank" rel="noopener noreferrer">
-            <FaLinkedin size={16} className="invert hover:scale-110 transition-transform text-foreground" />
-          </a>
           <a href="https://www.instagram.com/8thmile.rvce?igsh=MWxmYWl6aDJ0dTYy" target="_blank" rel="noopener noreferrer">
             <FaInstagram size={16} className="invert hover:scale-110 transition-transform text-foreground" />
           </a>

@@ -11,6 +11,7 @@ export default function ContactPage() {
       email: "events_8thmile@rvce.edu.in",
       phone: "9686782196",
       contactPerson: "Milaap Kreations",
+      color: "#000000", // green
     },
     {
       id: 2,
@@ -18,6 +19,7 @@ export default function ContactPage() {
       email: "8thmile.team@gmail.com",
       phone: "8092811097",
       contactPerson: "Aaditya Raj",
+      color: "#000000", // orange
     },
     {
       id: 3,
@@ -25,6 +27,7 @@ export default function ContactPage() {
       email: "partnerships_8thmile@rvce.edu.in",
       phone: "6265673155",
       contactPerson: "Pranjal Agrawal",
+      color: "#000000", // pink
     },
   ];
 
@@ -63,91 +66,153 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="bg-black text-[#f9dd9c] min-h-screen py-32 px-6 md:px-20">
+    <div className="white-spotted-bg text-black min-h-screen py-32 px-6 md:px-20">
       <div className="max-w-7xl mx-auto">
-        <p className="text-5xl font-bold text-center mb-16 tracking-tight delagothic">Get In Touch</p>
+
+        {/* Main Heading */}
+        <p className="text-6xl seasons text-center mb-16 tracking-tight"
+          style={{ color: "#be1e2d" }}>
+          Get In Touch
+        </p>
+
         <div className="grid md:grid-cols-2 gap-16">
-          {/* Contact Information */}
+
+          {/* CONTACT INFORMATION */}
           <div>
-            <p className="text-3xl font-semibold mb-8">Contact Information</p>
+            <p className="text-3xl sora font-extrabold mb-8"
+              style={{ color: "#25ae80" }}>
+              Contact Information
+            </p>
             <div className="space-y-6">
               {contactInfo.map((info) => (
-                <div key={info.id} className="border border-[#f9dd9c] rounded-xl p-6 hover:shadow-xl transition duration-300">
-                  <p className="text-2xl font-semibold mb-4 text-white">{info.title}</p>
-                  <div className="space-y-3 text-white text-sm">
-                    <p><span className="font-semibold text-[#f9dd9c]">Email:</span> {info.email}</p>
-                    <p><span className="font-semibold text-[#f9dd9c]">Phone:</span> {info.phone}</p>
-                    <p><span className="font-semibold text-[#f9dd9c]">Contact Person:</span> {info.contactPerson}</p>
+                <div
+                  key={info.id}
+                  className="rounded-xl p-6 border border-gray-300 shadow-sm hover:shadow-md transition duration-300 bg-white"
+                >
+                  <p
+                    className="text-2xl font-semibold mb-4"
+                    style={{ color: info.color }}
+                  >
+                    {info.title}
+                  </p>
+
+                  <div className="space-y-2 text-black text-sm">
+                    <p>
+                      <span className="font-semibold" style={{ color: info.color }}>
+                        Email:
+                      </span>{" "}
+                      {info.email}
+                    </p>
+                    <p>
+                      <span className="font-semibold" style={{ color: info.color }}>
+                        Phone:
+                      </span>{" "}
+                      {info.phone}
+                    </p>
+                    <p>
+                      <span className="font-semibold" style={{ color: info.color }}>
+                        Contact Person:
+                      </span>{" "}
+                      {info.contactPerson}
+                    </p>
                   </div>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Contact Form */}
+          {/* CONTACT FORM */}
           <div>
-            <p className="text-3xl font-semibold mb-8">Send us a message</p>
+            <p className="text-3xl sora font-extrabold mb-8"
+              style={{ color: "#f6921e" }}>
+              Send us a message
+            </p>
 
             {alert && (
-              <div className={`p-4 rounded-lg mb-6 border relative ${
-                alert.type === "success"
-                  ? "bg-green-900/20 border-green-400"
-                  : "bg-red-900/20 border-red-500"
-              }`}>
+              <div
+                className={`p-4 rounded-lg mb-6 flex items-start gap-2 border relative ${alert.type === "success"
+                    ? "bg-green-100 border-green-400 text-green-800"
+                    : "bg-red-100 border-red-400 text-red-800"
+                  }`}
+              >
                 {alert.type === "success" ? (
-                  <CheckCircle className="inline w-5 h-5 mr-2 text-green-400" />
+                  <CheckCircle className="w-5 h-5" />
                 ) : (
-                  <AlertTriangle className="inline w-5 h-5 mr-2 text-red-500" />
+                  <AlertTriangle className="w-5 h-5" />
                 )}
-                <strong className="mr-2">{alert.type === "success" ? "Success:" : "Error:"}</strong>
-                {alert.message}
-                <button onClick={() => setAlert(null)} className="absolute top-2 right-2 hover:text-white">
+
+                <div>
+                  <strong>{alert.type === "success" ? "Success:" : "Error:"}</strong>{" "}
+                  {alert.message}
+                </div>
+
+                <button
+                  onClick={() => setAlert(null)}
+                  className="absolute top-2 right-2 hover:opacity-60"
+                >
                   <X className="w-4 h-4" />
                 </button>
               </div>
             )}
 
             <form onSubmit={handleSubmit} className="space-y-6">
+
+              {/* Name */}
               <div>
-                <label htmlFor="name" className="block text-sm mb-1 uppercase tracking-wider">Name</label>
+                <label className="block text-sm mb-1 uppercase tracking-wider font-semibold">
+                  Name
+                </label>
                 <input
-                  id="name"
                   name="name"
                   required
                   placeholder="Enter your name"
-                  className="w-full bg-[#1a1a1a] border border-[#f9dd9c] text-[#f9dd9c] px-4 py-3 rounded-md placeholder-[#f9dd9c]/60 focus:outline-none"
+                  className="w-full bg-white border border-gray-300 px-4 py-3 rounded-md focus:outline-blue-400"
                 />
               </div>
+
+              {/* Email */}
               <div>
-                <label htmlFor="email" className="block text-sm mb-1 uppercase tracking-wider">Email</label>
+                <label className="block text-sm mb-1 uppercase tracking-wider font-semibold">
+                  Email
+                </label>
                 <input
-                  id="email"
                   name="email"
                   type="email"
                   required
                   placeholder="Enter your email"
-                  className="w-full bg-[#1a1a1a] border border-[#f9dd9c] text-[#f9dd9c] px-4 py-3 rounded-md placeholder-[#f9dd9c]/60 focus:outline-none"
+                  className="w-full bg-white border border-gray-300 px-4 py-3 rounded-md focus:outline-blue-400"
                 />
               </div>
+
+              {/* Message */}
               <div>
-                <label htmlFor="message" className="block text-sm mb-1 uppercase tracking-wider">Message</label>
+                <label className="block text-sm mb-1 uppercase tracking-wider font-semibold">
+                  Message
+                </label>
                 <textarea
-                  id="message"
                   name="message"
                   rows={5}
                   required
                   placeholder="Your message here..."
-                  className="w-full bg-[#1a1a1a] border border-[#f9dd9c] text-[#f9dd9c] px-4 py-3 rounded-md placeholder-[#f9dd9c]/60 focus:outline-none"
+                  className="w-full bg-white border border-gray-300 px-4 py-3 rounded-md focus:outline-blue-400"
                 ></textarea>
               </div>
+
+              {/* Submit Button */}
               <button
                 type="submit"
-                className="w-full bg-[#f9dd9c] text-black font-semibold py-3 text-lg rounded-md hover:bg-[#f5d87e] transition"
+                className="w-full py-3 text-lg font-semibold rounded-md shadow-sm transition"
+                style={{
+                  backgroundColor: "#007dc9",
+                  color: "white",
+                }}
               >
                 Send Message
               </button>
+
             </form>
           </div>
+
         </div>
       </div>
     </div>
