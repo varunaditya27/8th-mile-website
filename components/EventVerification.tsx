@@ -115,7 +115,6 @@ export default function EventVerification({ data }: EventVerificationProps) {
         <p style="font-size: 32px; font-weight: bold; color: #000000; margin: 20px;">
           Payment Receipt
         </p>
-        <img src="/png-ashtrang-cropped.png" width="250" height="50" alt="logo" />
         </div>
 
         <table
@@ -306,7 +305,6 @@ export default function EventVerification({ data }: EventVerificationProps) {
       <p style="font-size: 42px; font-weight: bold; color: #f9dd9c; margin: 20px;">
       Event Verification
       </p>
-      <img src="/png-ashtrang-cropped.png" width="350" height="50" alt="logo" />
     </div>
 
     <div style="display: flex; flex-direction: row; gap: 24px; flex-wrap: wrap;">
@@ -409,13 +407,6 @@ export default function EventVerification({ data }: EventVerificationProps) {
         <p className="text-xl sm:text-2xl md:text-3xl font-bold text-[#f9dd9c]">
           Event Verification
         </p>
-        <Image
-          src="/ashtrang-cropped.svg"
-          width={150}
-          height={40}
-          alt="logo"
-          className="w-[100px] sm:w-[120px] md:w-[150px]"
-        />
       </div>
 
       <div className="flex flex-col md:flex-row gap-4 md:gap-6 items-center md:items-start">
@@ -424,15 +415,15 @@ export default function EventVerification({ data }: EventVerificationProps) {
             <tbody>
               <tr className="border-b border-purple-300">
                 <th className="py-1 px-2 sm:py-2 sm:px-3 text-gray-400 font-semibold border-r border-purple-300 w-1/3">Payment ID:</th>
-                <td className="py-1 px-2 sm:py-2 sm:px-3 break-all">{data._id}</td>
+                <td className="py-1 px-2 sm:py-2 sm:px-3 break-all text-white">{data._id}</td>
               </tr>
               <tr className="border-b border-purple-300">
                 <th className="py-1 px-2 sm:py-2 sm:px-3 text-gray-400 font-semibold border-r border-purple-300 w-1/3">Order ID:</th>
-                <td className="py-1 px-2 sm:py-2 sm:px-3 break-all">{data.orderId}</td>
+                <td className="py-1 px-2 sm:py-2 sm:px-3 break-all text-white">{data.orderId}</td>
               </tr>
               <tr className="border-b border-purple-300">
                 <th className="py-1 px-2 sm:py-2 sm:px-3 text-gray-400 font-semibold border-r border-purple-300 w-1/3">Name:</th>
-                <td className="py-1 px-2 sm:py-2 sm:px-3 break-words">{data.name}</td>
+                <td className="py-1 px-2 sm:py-2 sm:px-3 break-words text-white">{data.name}</td>
               </tr>
               {showParticipants && (
                 <tr className="border-b border-purple-300">
@@ -448,7 +439,7 @@ export default function EventVerification({ data }: EventVerificationProps) {
                       )}
                       {data.participantsData && data.participantsData.length > 1 && (
                         <div className="text-xs text-gray-300 leading-relaxed break-words">
-                          <span className="text-gray-400">Members: </span>
+                          <span className="text-white">Members: </span>
                           {data.participantsData.slice(1).map(p => p.name).join(", ")}
                         </div>
                       )}
@@ -458,15 +449,15 @@ export default function EventVerification({ data }: EventVerificationProps) {
               )}
               <tr className="border-b border-purple-300">
                 <th className="py-1 px-2 sm:py-2 sm:px-3 text-gray-400 font-semibold border-r border-purple-300 w-1/3">Email:</th>
-                <td className="py-1 px-2 sm:py-2 sm:px-3 break-all">{data.email}</td>
+                <td className="py-1 px-2 sm:py-2 sm:px-3 break-all text-white">{data.email}</td>
               </tr>
               <tr className="border-b border-purple-300">
                 <th className="py-1 px-2 sm:py-2 sm:px-3 text-gray-400 font-semibold border-r border-purple-300 w-1/3">Phone:</th>
-                <td className="py-1 px-2 sm:py-2 sm:px-3 break-words">{data.phone}</td>
+                <td className="py-1 px-2 sm:py-2 sm:px-3 break-words text-white">{data.phone}</td>
               </tr>
               <tr>
                 <th className="py-1 px-2 sm:py-2 sm:px-3 text-gray-400 font-semibold border-r border-purple-300 w-1/3">Class ID:</th>
-                <td className="py-1 px-2 sm:py-2 sm:px-3 break-words">{data.classId}</td>
+                <td className="py-1 px-2 sm:py-2 sm:px-3 break-words text-white">{data.classId}</td>
               </tr>
             </tbody>
           </table>
@@ -495,13 +486,13 @@ export default function EventVerification({ data }: EventVerificationProps) {
     <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-4 w-full">
       <button
         onClick={() => downloadAsPDF(passRef, `event-pass-${data._id}.pdf`)}
-        className="w-full sm:w-1/2 px-4 py-2 rounded-lg font-semibold shadow-md bg-[#f9dd9c] text-black hover:bg-[#ffe9b8] transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white text-sm"
+        className="w-full sm:w-1/2 px-4 py-2 rounded-lg font-semibold shadow-md text-white bg-black hover:bg-slate-900 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 text-sm"
       >
         Download Event Pass
       </button>
       <button
         onClick={() => downloadReceipt(receiptRef, `event-receipt-${data._id}.pdf`)}
-        className="w-full sm:w-1/2 px-4 py-2 rounded-md font-semibold shadow-md bg-[#f9dd9c] text-black hover:bg-[#ffe9b8] transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white text-sm"
+        className="w-full sm:w-1/2 px-4 py-2 rounded-md font-semibold shadow-md text-white bg-black hover:bg-slate-900 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 text-sm"
       >
         Download Receipt
       </button>

@@ -126,7 +126,6 @@ export default function PassVerification({ data }: PassVerificationProps) {
         <p style="font-size: 32px; font-weight: bold; color: #000000; margin: 20px;">
           Payment Receipt
         </p>
-        <img src="/png-ashtrang-cropped.png" width="250" height="50" alt="logo" />
         </div>
 
         <table
@@ -335,7 +334,6 @@ export default function PassVerification({ data }: PassVerificationProps) {
       <p style="font-size: 42px; font-weight: bold; color: #f9dd9c; margin: 20px;">
         Pass Verification
       </p>
-      <img src="/png-ashtrang-cropped.png" width="350" height="50" alt="logo" />
     </div>
 
     <div style="display: flex; flex-direction: row; gap: 24px; flex-wrap: wrap;">
@@ -416,7 +414,6 @@ export default function PassVerification({ data }: PassVerificationProps) {
             <p className="text-2xl md:text-3xl font-bold text-[#f9dd9c]">
               Pass Verification
             </p>
-            <Image src={'/ashtrang-cropped.svg'} width={200} height={50} alt='logo' className='w-[150px] md:w-[200px]' />
           </div>
           <div className="flex flex-col md:flex-row gap-6 items-center md:items-start">
             <div className="flex-1">
@@ -471,13 +468,13 @@ export default function PassVerification({ data }: PassVerificationProps) {
         <div className="flex flex-row gap-6">
           <button
             onClick={() => downloadAsPDF(passRef, `pass-${data._id}.pdf`)}
-            className="mt-8 w-1/2 px-6 py-3 rounded-lg font-semibold shadow-md bg-[#f9dd9c] text-black hover:bg-[#ffe9b8] transition-colors duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white"
+            className="mt-8 w-1/2 px-6 py-3 rounded-lg font-semibold shadow-md bg-black text-white hover:bg-[#ffe9b8] transition-colors duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white"
           >
             Download Pass
           </button>
           <button
             onClick={() => downloadReceipt(receiptRef, `payment-receipt-${data._id}.pdf`)}
-            className="mt-8 w-1/2 rounded-md px-6 py-3 font-semibold shadow-md bg-[#f9dd9c] text-black hover:bg-[#ffe9b8] transition-colors duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white"
+            className="mt-8 w-1/2 rounded-md px-6 py-3 font-semibold shadow-md bg-black text-white hover:bg-[#ffe9b8] transition-colors duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white"
           >
             Download Receipt
           </button>
