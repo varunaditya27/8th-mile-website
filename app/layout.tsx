@@ -2,13 +2,13 @@ import React from "react"
 import localFont from 'next/font/local'
 
 import type { Metadata } from 'next'
- 
+import "./globals.css"
+
 export const metadata: Metadata = {
   title: '8th Mile 2025',
   description: '8th Mile 2025, official fest of R.V. College of Engineering',
   icons:"/favicon.ico"
 }
-import "./globals.css"
 
 // fonts
 const samarkan = localFont({
@@ -56,13 +56,12 @@ const sora = localFont({
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <>
-      <html lang="en" suppressHydrationWarning className={`${samarkan.variable} ${akaya.variable} ${fraunces.variable} ${poppins.variable} ${delagothic.variable} ${sora.variable} ${seasons.variable}`}>
-        <head />
-        <body>
-          {children}
-        </body>
-      </html>
-    </>
+    <html lang="en" suppressHydrationWarning className={`${samarkan.variable} ${akaya.variable} ${fraunces.variable} ${poppins.variable} ${delagothic.variable} ${sora.variable} ${seasons.variable}`}>
+      <head>
+      </head>
+      <body>
+        {children}
+      </body>
+    </html>
   )
 }

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Label } from "@/components/ui/label";
 import { getPass } from '@/data/passes';
+import { load } from '@cashfreepayments/cashfree-js';
+import type { CashfreeInstance, CashfreeCheckoutOptions } from '@cashfreepayments/cashfree-js';
 
 export default function CheckoutPage() {
   const searchParams = useSearchParams();
@@ -22,7 +24,9 @@ export default function CheckoutPage() {
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
-  const [isRedirecting,] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState(false);
+  const cashfreeRef = useRef<CashfreeInstance | null>(null);
+  const cashfreeMode = process.env.NEXT_PUBLIC_CASHFREE_MODE === 'production' ? 'production' : 'sandbox';
 
   useEffect(() => {
     // Check if returning from Cashfree with error
@@ -51,13 +55,38 @@ export default function CheckoutPage() {
 
 
     setLoading(false);
-  }, [passId, name]);
+  }, [passId]);
+
+  useEffect(() => {
+    let mounted = true;
+
+    load({ mode: cashfreeMode })
+      .then((instance: CashfreeInstance | null) => {
+        if (mounted) {
+          cashfreeRef.current = instance;
+        }
+      })
+      .catch((sdkError: unknown) => {
+        console.error('Failed to initialise Cashfree SDK', sdkError);
+        if (mounted) {
+          setError((prev) => prev || 'Unable to initialise the payment gateway. Please refresh the page and try again.');
+        }
+      });
+
+    return () => {
+      mounted = false;
+    };
+  }, [cashfreeMode]);
 
   const handlePayment = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsProcessing(true);
 
     try {
+      if (!pass) {
+        throw new Error('No pass selected.');
+      }
+
       const merchantOrderId = `8THMILE_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
 
       // Create a data object with all the collected information
@@ -85,23 +114,34 @@ export default function CheckoutPage() {
         throw new Error(data.message || 'Failed to create payment order');
       }
 
-      // Use Cashfree JS SDK for redirect-based checkout
-      const cashfree = (window as any).Cashfree({
-        mode: process.env.NEXT_PUBLIC_CASHFREE_MODE || 'sandbox'
-      });
+      const { paymentSessionId } = data as { paymentSessionId: string };
+      if (!paymentSessionId) {
+        throw new Error('Payment session was not generated. Please try again.');
+      }
 
-      const checkoutOptions = {
-        paymentSessionId: data.paymentSessionId,
-        redirectTarget: '_self' // Redirect in same window
+      let cashfree = cashfreeRef.current;
+      if (!cashfree) {
+        cashfree = await load({ mode: cashfreeMode });
+        if (!cashfree) {
+          throw new Error('Cashfree SDK not loaded. Please refresh and try again.');
+        }
+        cashfreeRef.current = cashfree;
+      }
+
+      const checkoutOptions: CashfreeCheckoutOptions = {
+        paymentSessionId,
+        redirectTarget: '_self',
       };
 
       // This will redirect the user to Cashfree's hosted payment page
       // After payment, Cashfree will redirect back to the returnUrl configured in the order (/api/verify)
+      setIsRedirecting(true);
       cashfree.checkout(checkoutOptions);
 
     } catch (err: any) {
       setError(err.message || 'Failed to process payment');
       console.error(err);
+      setIsRedirecting(false);
       setIsProcessing(false);
     }
   };

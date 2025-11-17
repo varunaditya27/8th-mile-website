@@ -4,6 +4,7 @@ import Order from "@/lib/models/Orders";
 import Registration from "@/lib/models/Registrations";
 import { connectToDatabase } from "@/lib/db";
 import { sendEmail } from "@/lib/server-utils";
+import { fetchCashfreeOrder } from "@/lib/cashfree";
 
 async function mailto(type: string, registration: any, paymentId: string) {
     const url = `${process.env.NEXT_PUBLIC_APP_URL}/verify?payment_id=${paymentId}`;
@@ -113,27 +114,7 @@ export async function GET(request: Request) {
         // Cashfree payment verification (sole payment provider)
         try {
             // Make direct API call to Cashfree to verify order status using merchantOrderId
-            const cashfreeApiUrl = process.env.NEXT_PUBLIC_CASHFREE_MODE === 'production'
-                ? 'https://api.cashfree.com/pg'
-                : 'https://sandbox.cashfree.com/pg';
-            
-            const cashfreeResponse = await fetch(`${cashfreeApiUrl}/orders/${order.merchantOrderId}`, {
-                method: 'GET',
-                headers: {
-                    'accept': 'application/json',
-                    'x-api-version': '2023-08-01',
-                    'x-client-id': process.env.NEXT_PUBLIC_CASHFREE_CLIENT_ID as string,
-                    'x-client-secret': process.env.CASHFREE_CLIENT_SECRET as string
-                }
-            });
-
-            // remove console log in production
-            if (!cashfreeResponse.ok) {
-                console.error('Cashfree API error:', await cashfreeResponse.text());
-                return NextResponse.json({ success: false, message: 'Payment verification failed' }, { status: 500 });
-            }
-
-            const cashfreeData = await cashfreeResponse.json();
+            const cashfreeData = await fetchCashfreeOrder(order.merchantOrderId);
             console.log('Cashfree order status:', cashfreeData.order_status);
 
             // Update cashfree status in database
@@ -144,18 +125,8 @@ export async function GET(request: Request) {
                 await new Promise(resolve => setTimeout(resolve, 5000));
                 
                 // retrying to fetch order status
-                const retryResponse = await fetch(`${cashfreeApiUrl}/orders/${order.merchantOrderId}`, {
-                    method: 'GET',
-                    headers: {
-                        'accept': 'application/json',
-                        'x-api-version': '2023-08-01',
-                        'x-client-id': process.env.NEXT_PUBLIC_CASHFREE_CLIENT_ID as string,
-                        'x-client-secret': process.env.CASHFREE_CLIENT_SECRET as string
-                    }
-                });
-                
-                if (retryResponse.ok) {
-                    const retryData = await retryResponse.json();
+                try {
+                    const retryData = await fetchCashfreeOrder(order.merchantOrderId);
                     console.log('Retry check - Order status:', retryData.order_status);
                     
                     // Update cashfree status again
@@ -176,7 +147,8 @@ export async function GET(request: Request) {
                         console.log('Payment failed after retry:', retryData.order_status);
                         return NextResponse.redirect(new URL(`/failed?payment_id=${paymentId}`, request.url));
                     }
-                } else {
+                } catch (retryError) {
+                    console.error('Cashfree retry verification error:', retryError);
                     return NextResponse.json({ 
                         success: false, 
                         message: 'Unable to verify payment status. Please try again.' 

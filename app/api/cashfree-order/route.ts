@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { CFOrderRequest, CFCustomerDetails, CFOrderMeta } from 'cashfree-pg-sdk-nodejs';
 import { getPass } from '@/data/passes';
-import { cashfree, cfConfig } from '@/lib/cashfree';
+import { createCashfreeOrder, CashfreeOrderRequest } from '@/lib/cashfree';
 import Order from '@/lib/models/Orders';
 import { connectToDatabase } from '@/lib/db';
 import Event from '@/lib/models/Event';
@@ -23,31 +22,27 @@ export async function POST(req: NextRequest) {
             }
         
             const redirectUrl = `${process.env.NEXT_PUBLIC_APP_URL}/api/verify?payment_id=${merchantOrderId}`;
-        
-            // Create Cashfree payment request
-            const orderRequest = new CFOrderRequest();
-            orderRequest.orderId = merchantOrderId;
-            orderRequest.orderAmount = pass.price;
-            orderRequest.orderCurrency = 'INR';
-            
-            const customerDetails = new CFCustomerDetails();
-            customerDetails.customerId = email.toLowerCase().replace(/[^a-z0-9]/g, "_").replace(/_+/g, "_").replace(/^_|_$/g, "");
-            customerDetails.customerName = name;
-            customerDetails.customerEmail = email.toLowerCase();
-            customerDetails.customerPhone = phone.trim();
-            orderRequest.customerDetails = customerDetails;
-            
-            const orderMeta = new CFOrderMeta();
-            orderMeta.returnUrl = redirectUrl;
-            orderMeta.notifyUrl = `${process.env.NEXT_PUBLIC_APP_URL}/api/verify`;
-            orderRequest.orderMeta = orderMeta;
 
-            const response = await cashfree.orderCreate(cfConfig, orderRequest);
-            console.log('Cashfree API response:', JSON.stringify(response, null, 2));
-            console.log('Payment Session ID:', response?.cfOrder?.paymentSessionId);
+            const orderRequest: CashfreeOrderRequest = {
+                order_id: merchantOrderId,
+                order_amount: Number(pass.price),
+                order_currency: 'INR',
+                customer_details: {
+                    customer_id: email.toLowerCase().replace(/[^a-z0-9]/g, "_").replace(/_+/g, "_").replace(/^_|_$/g, ""),
+                    customer_name: name,
+                    customer_email: email.toLowerCase(),
+                    customer_phone: phone.trim(),
+                },
+                order_meta: {
+                    return_url: redirectUrl,
+                    notify_url: `${process.env.NEXT_PUBLIC_APP_URL}/api/verify`,
+                },
+                order_note: `Pass purchase: ${pass.name}`,
+            };
 
-            // Check if Cashfree response is valid
-            if (!response || !response.cfOrder || !response.cfOrder.paymentSessionId) {
+            const response = await createCashfreeOrder(orderRequest);
+
+            if (!response?.payment_session_id) {
                 console.error('Invalid Cashfree response:', response);
                 return NextResponse.json(
                     { success: false, message: 'Failed to create Cashfree order', details: response },
@@ -55,21 +50,18 @@ export async function POST(req: NextRequest) {
                 );
             }
 
-            // Store payment session ID for use with Cashfree JS SDK
             const paymentMode = process.env.NEXT_PUBLIC_CASHFREE_MODE === 'production' ? 'production' : 'sandbox';
 
-            // Create order in the database
             const order = new Order({
-                _id: response.cfOrder.orderId,
+                _id: response.order_id,
                 merchantOrderId,
-                cashfreeOrderId: response.cfOrder.orderId,
-                provider: 'cashfree',
-                providerOrderId: response.cfOrder.orderId,
-                paymentSessionId: response.cfOrder.paymentSessionId,
-                currency: 'INR',
+                cashfreeOrderId: response.cf_order_id,
+                paymentSessionId: response.payment_session_id,
+                currency: response.order_currency,
                 mode: paymentMode,
-                amount: pass.price,
+                amount: Number(pass.price),
                 paymentStatus: 'PENDING',
+                cashfreeStatus: response.order_status,
                 mailSent: false,
                 name,
                 email,
@@ -86,8 +78,8 @@ export async function POST(req: NextRequest) {
             return NextResponse.json(
                 {
                     success: true,
-                    paymentSessionId: response.cfOrder.paymentSessionId,
-                    orderId: response.cfOrder.orderId
+                    paymentSessionId: response.payment_session_id,
+                    orderId: response.order_id
                 },
                 { status: 200 }
             );
@@ -105,29 +97,26 @@ export async function POST(req: NextRequest) {
             }
             const redirectUrl = `${process.env.NEXT_PUBLIC_APP_URL}/api/verify?payment_id=${merchantOrderId}`;
             
-            // Create Cashfree payment request
-            const orderRequest = new CFOrderRequest();
-            orderRequest.orderId = merchantOrderId;
-            orderRequest.orderAmount = totalAmount;
-            orderRequest.orderCurrency = 'INR';
-            
-            const customerDetails = new CFCustomerDetails();
-            customerDetails.customerId = email.toLowerCase().replace(/[^a-z0-9]/g, "_").replace(/_+/g, "_").replace(/^_|_$/g, "");
-            customerDetails.customerName = name;
-            customerDetails.customerEmail = email.toLowerCase();
-            customerDetails.customerPhone = phone.trim();
-            orderRequest.customerDetails = customerDetails;
-            
-            const orderMeta = new CFOrderMeta();
-            orderMeta.returnUrl = redirectUrl;
-            orderMeta.notifyUrl = `${process.env.NEXT_PUBLIC_APP_URL}/api/verify`;
-            orderRequest.orderMeta = orderMeta;
+            const orderRequest: CashfreeOrderRequest = {
+                order_id: merchantOrderId,
+                order_amount: Number(totalAmount),
+                order_currency: 'INR',
+                customer_details: {
+                    customer_id: email.toLowerCase().replace(/[^a-z0-9]/g, "_").replace(/_+/g, "_").replace(/^_|_$/g, ""),
+                    customer_name: name,
+                    customer_email: email.toLowerCase(),
+                    customer_phone: phone.trim(),
+                },
+                order_meta: {
+                    return_url: redirectUrl,
+                    notify_url: `${process.env.NEXT_PUBLIC_APP_URL}/api/verify`,
+                },
+                order_note: `Event registration: ${eventval.name}`,
+            };
 
-            const response = await cashfree.orderCreate(cfConfig, orderRequest);
-            console.log('Cashfree API response (event):', JSON.stringify(response, null, 2));
+            const response = await createCashfreeOrder(orderRequest);
 
-            // Check if Cashfree response is valid
-            if (!response || !response.cfOrder || !response.cfOrder.paymentSessionId) {
+            if (!response?.payment_session_id) {
                 console.error('Invalid Cashfree response:', response);
                 return NextResponse.json(
                     { success: false, message: 'Failed to create Cashfree order', details: response },
@@ -135,18 +124,18 @@ export async function POST(req: NextRequest) {
                 );
             }
 
-            // Store payment session ID for use with Cashfree JS SDK
             const paymentMode = process.env.NEXT_PUBLIC_CASHFREE_MODE === 'production' ? 'production' : 'sandbox';
 
             const order = new Order({
-                _id: response.cfOrder.orderId,
+                _id: response.order_id,
                 merchantOrderId,
-                cashfreeOrderId: response.cfOrder.cfOrderId,
-                paymentSessionId: response.cfOrder.paymentSessionId,
-                currency: 'INR',
+                cashfreeOrderId: response.cf_order_id,
+                paymentSessionId: response.payment_session_id,
+                currency: response.order_currency,
                 mode: paymentMode,
-                amount: totalAmount,
+                amount: Number(totalAmount),
                 paymentStatus: 'PENDING',
+                cashfreeStatus: response.order_status,
                 mailSent: false,
                 name,
                 email,
@@ -154,7 +143,7 @@ export async function POST(req: NextRequest) {
                 type: 'event',
                 classId: eventval.id,
                 noOfParticipants: teamSize,
-                participantsData: teamMembers.map((member:string) => ({ name: member, arrived: false })),
+                participantsData: teamMembers.map((member: string) => ({ name: member, arrived: false })),
                 rawPaymentResponse: response,
             });
 
@@ -163,8 +152,8 @@ export async function POST(req: NextRequest) {
             return NextResponse.json(
                 {
                     success: true,
-                    paymentSessionId: response.cfOrder.paymentSessionId,
-                    orderId: response.cfOrder.orderId
+                    paymentSessionId: response.payment_session_id,
+                    orderId: response.order_id
                 },
                 { status: 200 }
             );
@@ -175,9 +164,16 @@ export async function POST(req: NextRequest) {
 
     } catch (error) {
         console.error('Error creating order:', error);
+        if (error instanceof Error) {
             return NextResponse.json(
-                { success: false, message: 'Failed to create order' },
+                { success: false, message: error.message || 'Failed to create order' },
                 { status: 500 }
             );
+        }
+
+        return NextResponse.json(
+            { success: false, message: 'Failed to create order' },
+            { status: 500 }
+        );
     }
 }

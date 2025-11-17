@@ -1,13 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Loader from '@/components/Loader';
+import { load } from '@cashfreepayments/cashfree-js';
+import type { CashfreeInstance, CashfreeCheckoutOptions } from '@cashfreepayments/cashfree-js';
 
 export default function EventRegistrationPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const slug = searchParams.get('slug');
   const [event, setEvent] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -20,7 +23,9 @@ export default function EventRegistrationPage() {
   const [teamsize, setTeamsize] = useState(1);
   const [teamMembers, setTeamMembers] = useState<{name: string}[]>([{name: ''}]);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [isRedirecting,] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState(false);
+  const cashfreeRef = useRef<CashfreeInstance | null>(null);
+  const cashfreeMode = process.env.NEXT_PUBLIC_CASHFREE_MODE === 'production' ? 'production' : 'sandbox';
   
   useEffect(() => {
     // Check if returning from Cashfree with error
@@ -32,8 +37,6 @@ export default function EventRegistrationPage() {
       return;
     }
 
-    const slug = searchParams.get('slug');
-    
     if (!slug) {
       setError('No event selected');
       setLoading(false);
@@ -84,7 +87,44 @@ export default function EventRegistrationPage() {
     };
     
     loadEvent();
-  }, [searchParams, name]);
+  }, [slug]);
+
+  useEffect(() => {
+    setTeamMembers((prev) => {
+      if (!prev.length) {
+        return prev;
+      }
+
+      if (prev[0]?.name === name) {
+        return prev;
+      }
+
+      const updated = [...prev];
+      updated[0] = { ...updated[0], name };
+      return updated;
+    });
+  }, [name]);
+
+  useEffect(() => {
+    let mounted = true;
+
+    load({ mode: cashfreeMode })
+      .then((instance: CashfreeInstance | null) => {
+        if (mounted) {
+          cashfreeRef.current = instance;
+        }
+      })
+      .catch((sdkError: unknown) => {
+        console.error('Failed to initialise Cashfree SDK', sdkError);
+        if (mounted) {
+          setError((prev) => prev ?? 'Unable to initialise the payment gateway. Please refresh the page and try again.');
+        }
+      });
+
+    return () => {
+      mounted = false;
+    };
+  }, [cashfreeMode]);
   
   const handleTeamMemberChange = (index: number, value: string) => {
     const newTeamMembers = [...teamMembers];
@@ -180,23 +220,34 @@ export default function EventRegistrationPage() {
         throw new Error(data.message || 'Failed to create payment order');
       }
 
-      // Use Cashfree JS SDK for redirect-based checkout
-      const cashfree = (window as any).Cashfree({
-        mode: process.env.NEXT_PUBLIC_CASHFREE_MODE || 'sandbox'
-      });
+      const { paymentSessionId } = data as { paymentSessionId: string };
+      if (!paymentSessionId) {
+        throw new Error('Payment session was not generated. Please try again.');
+      }
 
-      const checkoutOptions = {
-        paymentSessionId: data.paymentSessionId,
-        redirectTarget: '_self' // Redirect in same window
+      let cashfree = cashfreeRef.current;
+      if (!cashfree) {
+        cashfree = await load({ mode: cashfreeMode });
+        if (!cashfree) {
+          throw new Error('Cashfree SDK not loaded. Please refresh and try again.');
+        }
+        cashfreeRef.current = cashfree;
+      }
+
+      const checkoutOptions: CashfreeCheckoutOptions = {
+        paymentSessionId,
+        redirectTarget: '_self',
       };
 
       // This will redirect the user to Cashfree's hosted payment page
       // After payment, Cashfree will redirect back to the returnUrl configured in the order (/api/verify)
+      setIsRedirecting(true);
       cashfree.checkout(checkoutOptions);
 
     } catch (err: any) {
       setError(err.message || 'Failed to process registration');
       console.error(err);
+      setIsRedirecting(false);
       setIsProcessing(false);
     }
   };
