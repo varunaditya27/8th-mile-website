@@ -8,7 +8,7 @@ export default function HomePage() {
 
     return (
         <>
-            <div className="w-full">
+            <div className="w-full ">
 
                 {/* Section 1 */}
                 <section className="sticky top-0 thick-waves-bg h-screen flex items-center justify-center text-4xl font-bold">
@@ -17,7 +17,7 @@ export default function HomePage() {
                     </div>
 
                     <div className='absolute top-55 sora font-extrabold text-black left-60'>4<sup>TH</sup>, 5<sup>TH</sup> & 6<sup>TH</sup><br />DECEMBER, 2025</div>
-                    <img src="/collage.svg" alt="" className='absolute -bottom-25 flex z-20' />
+                    <img src="/collage.svg" alt="" className='absolute -bottom-40 flex z-20' />
                 </section>
 
                 {/* Section 2 */}
